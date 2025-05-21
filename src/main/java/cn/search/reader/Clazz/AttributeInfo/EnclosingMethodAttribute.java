@@ -5,6 +5,7 @@ import cn.search.Annotation.ClazzCpInfoInit;
 import cn.search.Annotation.ClazzField;
 import cn.search.reader.Clazz.CpInfo.ConstantClassInfo;
 import cn.search.reader.Clazz.CpInfo.ConstantCpInfo;
+import cn.search.reader.Clazz.CpInfo.ConstantNameAndTypeInfo;
 import cn.search.reader.Usinged.U2;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -26,13 +27,18 @@ public class EnclosingMethodAttribute extends AttributeInfo {
 
     private ConstantClassInfo clazz;
 
+    private ConstantNameAndTypeInfo method;
+
     public EnclosingMethodAttribute() {
     }
 
     public EnclosingMethodAttribute(DataInputStream dataInput, ConstantCpInfo[] constantPool) {
 
+        if(this.classIndex.getValue() != 0)
+            this.clazz = (ConstantClassInfo) constantPool[this.classIndex.getValue() -1];
+
         if(this.methodIndex.getValue() != 0)
-            this.clazz = (ConstantClassInfo) constantPool[this.methodIndex.getValue() -1];
+            this.method = (ConstantNameAndTypeInfo) constantPool[this.methodIndex.getValue() -1];
 
     }
 

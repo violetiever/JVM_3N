@@ -265,7 +265,7 @@ class ArrayValue extends ElementValue {
     private ElementValue[] values;
 
     public ArrayValue(DataInputStream dataInput) {
-
+        values = new ElementValue[numValues.getValue()];
         for (int i = 0; i < values.length; i++) {
             values[i] = ElementValue.getElementValueByTag(dataInput);
         }

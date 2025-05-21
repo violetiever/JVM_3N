@@ -111,7 +111,7 @@ public class Clazz {
     // length = attributeCount
     private AttributeInfo[] attributes;
 
-    public Clazz(DataInputStream dataInput) throws IOException {
+    public Clazz(DataInputStream dataInput) throws Exception {
         this.magic = new U4(dataInput);
         this.minorVersion = new U2(dataInput);
         this.majorVersion = new U2(dataInput);
