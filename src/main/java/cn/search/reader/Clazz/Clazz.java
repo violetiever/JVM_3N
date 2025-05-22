@@ -4,6 +4,8 @@ package cn.search.reader.Clazz;
 import cn.search.reader.Clazz.AttributeInfo.AttributeInfo;
 import cn.search.reader.Clazz.CpInfo.ConstantClassInfo;
 import cn.search.reader.Clazz.CpInfo.ConstantCpInfo;
+import cn.search.reader.Clazz.CpInfo.ConstantDoubleInfo;
+import cn.search.reader.Clazz.CpInfo.ConstantLongInfo;
 import cn.search.reader.Clazz.FieldInfo.FieldInfo;
 import cn.search.reader.Clazz.MethodInfo.MethodInfo;
 import cn.search.reader.Usinged.U2;
@@ -15,6 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 @AllArgsConstructor
 public class Clazz {
@@ -121,10 +124,17 @@ public class Clazz {
         this.constantPool = new ConstantCpInfo[constantPoolLen];
         for (int i = 0; i < constantPoolLen; i++) {
             this.constantPool[i] = ConstantCpInfo.getCpInfoByTag(dataInput, constantPool);
+            // 如果是8字节常量则占用两个表元素空间
+            if(this.constantPool[i] instanceof ConstantLongInfo || this.constantPool[i] instanceof ConstantDoubleInfo){
+                i++;
+            }
         }
         for (int i = 0; i < constantPoolLen; i++) {
-            this.constantPool[i].initConstant(constantPool);
-            this.constantPool[i].link();
+            // 判空，防止8字节常量占用两个表元素空间的情况
+            if(Objects.nonNull(this.constantPool[i])) {
+                this.constantPool[i].initConstant(constantPool);
+                this.constantPool[i].link();
+            }
         }
 
         this.accessFlags = new U2(dataInput);

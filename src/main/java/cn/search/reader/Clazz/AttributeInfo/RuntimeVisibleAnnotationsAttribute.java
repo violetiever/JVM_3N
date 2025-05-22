@@ -42,7 +42,7 @@ public class RuntimeVisibleAnnotationsAttribute extends AttributeInfo {
 
 @Data
 @ClazzConstructor
-class Annotation {
+class Annotation extends ElementValue{
 
     // u2
     @ClazzField(order = 0)
@@ -111,7 +111,7 @@ class ElementValue {
         ELEMENT_VALUE_MAP.put("s", ConstValueIndex.class);
         ELEMENT_VALUE_MAP.put("e", EnumConstValue.class);
         ELEMENT_VALUE_MAP.put("c", ClassInfoIndex.class);
-        ELEMENT_VALUE_MAP.put("@", AnnotationValue.class);
+        ELEMENT_VALUE_MAP.put("@", Annotation.class);
         ELEMENT_VALUE_MAP.put("[", ArrayValue.class);
     }
 
@@ -228,27 +228,6 @@ class ClassInfoIndex extends ElementValue {
 
 }
 
-@Data
-@EqualsAndHashCode(callSuper = true)
-class AnnotationValue extends ElementValue {
-
-    // tag = '@'
-
-    // only one
-    @ClazzField(order = 0)
-    private Annotation annotationValue;
-
-
-    public AnnotationValue(DataInputStream dataInput) {
-
-    }
-
-    @Override
-    public void initConstant(ConstantCpInfo[] constantPool) {
-        this.annotationValue.initConstant(constantPool);
-    }
-
-}
 
 @Data
 @EqualsAndHashCode(callSuper = true)
