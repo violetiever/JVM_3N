@@ -8,16 +8,13 @@ import cn.search.reader.Clazz.CpInfo.ConstantDoubleInfo;
 import cn.search.reader.Clazz.CpInfo.ConstantLongInfo;
 import cn.search.reader.Clazz.FieldInfo.FieldInfo;
 import cn.search.reader.Clazz.MethodInfo.MethodInfo;
+import cn.search.reader.ClazzLoader.ClazzLoader;
 import cn.search.reader.Usinged.U2;
 import cn.search.reader.Usinged.U4;
 import lombok.AllArgsConstructor;
 
 import java.io.DataInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @AllArgsConstructor
 public class Clazz {
@@ -57,6 +54,8 @@ public class Clazz {
     }
 
     //protected byte Header[] = {202,254,186,190};
+
+    private ClazzLoader clazzLoader;
 
     // u4
     private U4 magic;
@@ -174,6 +173,14 @@ public class Clazz {
             attributes[i] = AttributeInfo.getAttributeInfoByNameIndex(dataInput, this.constantPool);
         }
 
+    }
+
+    public ClazzLoader getClazzLoader() {
+        return clazzLoader;
+    }
+
+    public void setClazzLoader(ClazzLoader clazzLoader) {
+        this.clazzLoader = clazzLoader;
     }
 
     public U4 getMagic() {
@@ -304,102 +311,53 @@ public class Clazz {
         this.attributes = attributes;
     }
 
-    public boolean equals(final Object o) {
-        if (o == this) return true;
-        if (!(o instanceof Clazz)) return false;
-        final Clazz other = (Clazz) o;
-        if (!other.canEqual((Object) this)) return false;
-        final Object this$magic = this.getMagic();
-        final Object other$magic = other.getMagic();
-        if (this$magic == null ? other$magic != null : !this$magic.equals(other$magic)) return false;
-        final Object this$minorVersion = this.getMinorVersion();
-        final Object other$minorVersion = other.getMinorVersion();
-        if (this$minorVersion == null ? other$minorVersion != null : !this$minorVersion.equals(other$minorVersion))
-            return false;
-        final Object this$majorVersion = this.getMajorVersion();
-        final Object other$majorVersion = other.getMajorVersion();
-        if (this$majorVersion == null ? other$majorVersion != null : !this$majorVersion.equals(other$majorVersion))
-            return false;
-        final Object this$constantPoolCount = this.getConstantPoolCount();
-        final Object other$constantPoolCount = other.getConstantPoolCount();
-        if (this$constantPoolCount == null ? other$constantPoolCount != null : !this$constantPoolCount.equals(other$constantPoolCount))
-            return false;
-        if (!java.util.Arrays.deepEquals(this.getConstantPool(), other.getConstantPool())) return false;
-        final Object this$accessFlags = this.getAccessFlags();
-        final Object other$accessFlags = other.getAccessFlags();
-        if (this$accessFlags == null ? other$accessFlags != null : !this$accessFlags.equals(other$accessFlags))
-            return false;
-        final Object this$thisClass = this.getThisClass();
-        final Object other$thisClass = other.getThisClass();
-        if (this$thisClass == null ? other$thisClass != null : !this$thisClass.equals(other$thisClass)) return false;
-        final Object this$superClass = this.getSuperClass();
-        final Object other$superClass = other.getSuperClass();
-        if (this$superClass == null ? other$superClass != null : !this$superClass.equals(other$superClass))
-            return false;
-        final Object this$interfacesCount = this.getInterfacesCount();
-        final Object other$interfacesCount = other.getInterfacesCount();
-        if (this$interfacesCount == null ? other$interfacesCount != null : !this$interfacesCount.equals(other$interfacesCount))
-            return false;
-        if (!java.util.Arrays.deepEquals(this.getInterfaces(), other.getInterfaces())) return false;
-        final Object this$fieldsCount = this.getFieldsCount();
-        final Object other$fieldsCount = other.getFieldsCount();
-        if (this$fieldsCount == null ? other$fieldsCount != null : !this$fieldsCount.equals(other$fieldsCount))
-            return false;
-        if (!java.util.Arrays.deepEquals(this.getFields(), other.getFields())) return false;
-        final Object this$methodsCount = this.getMethodsCount();
-        final Object other$methodsCount = other.getMethodsCount();
-        if (this$methodsCount == null ? other$methodsCount != null : !this$methodsCount.equals(other$methodsCount))
-            return false;
-        if (!java.util.Arrays.deepEquals(this.getMethods(), other.getMethods())) return false;
-        final Object this$attributeCount = this.getAttributeCount();
-        final Object other$attributeCount = other.getAttributeCount();
-        if (this$attributeCount == null ? other$attributeCount != null : !this$attributeCount.equals(other$attributeCount))
-            return false;
-        if (!java.util.Arrays.deepEquals(this.getAttributes(), other.getAttributes())) return false;
-        return true;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Clazz clazz = (Clazz) o;
+        return Objects.equals(clazzLoader, clazz.clazzLoader) && Objects.equals(magic, clazz.magic) && Objects.equals(minorVersion, clazz.minorVersion) && Objects.equals(majorVersion, clazz.majorVersion) && Objects.equals(constantPoolCount, clazz.constantPoolCount) && Arrays.equals(constantPool, clazz.constantPool) && Objects.equals(accessFlags, clazz.accessFlags) && Arrays.equals(accessFlagsName, clazz.accessFlagsName) && Objects.equals(thisClass, clazz.thisClass) && Objects.equals(thisClassInfo, clazz.thisClassInfo) && Objects.equals(superClass, clazz.superClass) && Objects.equals(superClassInfo, clazz.superClassInfo) && Objects.equals(interfacesCount, clazz.interfacesCount) && Arrays.equals(interfaces, clazz.interfaces) && Arrays.equals(interfacesInfo, clazz.interfacesInfo) && Objects.equals(fieldsCount, clazz.fieldsCount) && Arrays.equals(fields, clazz.fields) && Objects.equals(methodsCount, clazz.methodsCount) && Arrays.equals(methods, clazz.methods) && Objects.equals(attributeCount, clazz.attributeCount) && Arrays.equals(attributes, clazz.attributes);
     }
 
-    protected boolean canEqual(final Object other) {
-        return other instanceof Clazz;
-    }
-
+    @Override
     public int hashCode() {
-        final int PRIME = 59;
-        int result = 1;
-        final Object $magic = this.getMagic();
-        result = result * PRIME + ($magic == null ? 43 : $magic.hashCode());
-        final Object $minorVersion = this.getMinorVersion();
-        result = result * PRIME + ($minorVersion == null ? 43 : $minorVersion.hashCode());
-        final Object $majorVersion = this.getMajorVersion();
-        result = result * PRIME + ($majorVersion == null ? 43 : $majorVersion.hashCode());
-        final Object $constantPoolCount = this.getConstantPoolCount();
-        result = result * PRIME + ($constantPoolCount == null ? 43 : $constantPoolCount.hashCode());
-        result = result * PRIME + java.util.Arrays.deepHashCode(this.getConstantPool());
-        final Object $accessFlags = this.getAccessFlags();
-        result = result * PRIME + ($accessFlags == null ? 43 : $accessFlags.hashCode());
-        final Object $thisClass = this.getThisClass();
-        result = result * PRIME + ($thisClass == null ? 43 : $thisClass.hashCode());
-        final Object $superClass = this.getSuperClass();
-        result = result * PRIME + ($superClass == null ? 43 : $superClass.hashCode());
-        final Object $interfacesCount = this.getInterfacesCount();
-        result = result * PRIME + ($interfacesCount == null ? 43 : $interfacesCount.hashCode());
-        result = result * PRIME + java.util.Arrays.deepHashCode(this.getInterfaces());
-        final Object $fieldsCount = this.getFieldsCount();
-        result = result * PRIME + ($fieldsCount == null ? 43 : $fieldsCount.hashCode());
-        result = result * PRIME + java.util.Arrays.deepHashCode(this.getFields());
-        final Object $methodsCount = this.getMethodsCount();
-        result = result * PRIME + ($methodsCount == null ? 43 : $methodsCount.hashCode());
-        result = result * PRIME + java.util.Arrays.deepHashCode(this.getMethods());
-        final Object $attributeCount = this.getAttributeCount();
-        result = result * PRIME + ($attributeCount == null ? 43 : $attributeCount.hashCode());
-        result = result * PRIME + java.util.Arrays.deepHashCode(this.getAttributes());
+        int result = Objects.hash(clazzLoader, magic, minorVersion, majorVersion, constantPoolCount, accessFlags, thisClass, thisClassInfo, superClass, superClassInfo, interfacesCount, fieldsCount, methodsCount, attributeCount);
+        result = 31 * result + Arrays.hashCode(constantPool);
+        result = 31 * result + Arrays.hashCode(accessFlagsName);
+        result = 31 * result + Arrays.hashCode(interfaces);
+        result = 31 * result + Arrays.hashCode(interfacesInfo);
+        result = 31 * result + Arrays.hashCode(fields);
+        result = 31 * result + Arrays.hashCode(methods);
+        result = 31 * result + Arrays.hashCode(attributes);
         return result;
     }
 
+    @Override
     public String toString() {
-        return "Clazz(magic=" + this.getMagic() + ", minorVersion=" + this.getMinorVersion() + ", majorVersion=" + this.getMajorVersion() + ", constantPoolCount=" + this.getConstantPoolCount() + ", constantPool=" + java.util.Arrays.deepToString(this.getConstantPool()) + ", accessFlags=" + this.getAccessFlags() + ", thisClass=" + this.getThisClass() + ", superClass=" + this.getSuperClass() + ", interfacesCount=" + this.getInterfacesCount() + ", interfaces=" + java.util.Arrays.deepToString(this.getInterfaces()) + ", fieldsCount=" + this.getFieldsCount() + ", fields=" + java.util.Arrays.deepToString(this.getFields()) + ", methodsCount=" + this.getMethodsCount() + ", methods=" + java.util.Arrays.deepToString(this.getMethods()) + ", attributeCount=" + this.getAttributeCount() + ", attributes=" + java.util.Arrays.deepToString(this.getAttributes()) + ")";
+        return "Clazz{" +
+                "clazzLoader=" + clazzLoader +
+                ", magic=" + magic +
+                ", minorVersion=" + minorVersion +
+                ", majorVersion=" + majorVersion +
+                ", constantPoolCount=" + constantPoolCount +
+                ", constantPool=" + Arrays.toString(constantPool) +
+                ", accessFlags=" + accessFlags +
+                ", accessFlagsName=" + Arrays.toString(accessFlagsName) +
+                ", thisClass=" + thisClass +
+                ", thisClassInfo=" + thisClassInfo +
+                ", superClass=" + superClass +
+                ", superClassInfo=" + superClassInfo +
+                ", interfacesCount=" + interfacesCount +
+                ", interfaces=" + Arrays.toString(interfaces) +
+                ", interfacesInfo=" + Arrays.toString(interfacesInfo) +
+                ", fieldsCount=" + fieldsCount +
+                ", fields=" + Arrays.toString(fields) +
+                ", methodsCount=" + methodsCount +
+                ", methods=" + Arrays.toString(methods) +
+                ", attributeCount=" + attributeCount +
+                ", attributes=" + Arrays.toString(attributes) +
+                '}';
     }
-
 
 }
 

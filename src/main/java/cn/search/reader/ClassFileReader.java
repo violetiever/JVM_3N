@@ -24,7 +24,7 @@ public class ClassFileReader {
         getAllJarFile(new File(javaHome + "\\lib"), allFileList);
         allFileList.forEach(ClassFileReader::lazyLoadJarClass);
 
-        Clazz clazz = classFileReader.ClassFileToClazz("G:/project/JVM_3N/ClassFileReader.class");
+        Clazz clazz = ClassFileReader.ClassFileToClazz("G:/project/JVM_3N/ClassFileReader.class");
 
 
         // 关闭所有文件流
