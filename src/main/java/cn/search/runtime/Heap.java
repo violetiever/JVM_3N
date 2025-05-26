@@ -8,15 +8,12 @@ import java.util.HashMap;
 @Slf4j
 public class Heap {
 
-    /**
-     * 字符串常量池 todo 字符串常量池 新存入时需要在堆内新建对象，存入的是对象在堆中的索引
-     */
 
 
     /**
-     * 反向字符串常量池，存储字符串对应的索引
+     * 反向字符串常量池，存储字符串对应的索引 todo 修改为码点当作key
      */
-    public static HashMap<char[], Integer> CONSTANT_STRING_POOL = new HashMap<>();
+    public static HashMap<String, Integer> CONSTANT_STRING_POOL = new HashMap<>();
 
 
     /**
@@ -28,18 +25,7 @@ public class Heap {
 
     public static Integer putIntoConstantStringPool(String s) {
         Integer index = putIntoObjectPool(s);
-        try {
-            // 反射获取value属性
-            Field valueField = String.class.getDeclaredField("value");
-            valueField.setAccessible(true);
-            Heap.CONSTANT_STRING_POOL.putIfAbsent((char[]) valueField.get(s), index);
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-            log.error("Heap Error;Method = putIntoConstantStringPool;NoSuchFieldException;s ={} ", s);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-            log.error("Heap Error;Method = putIntoConstantStringPool;IllegalAccessException;s ={} ", s);
-        }
+        Heap.CONSTANT_STRING_POOL.putIfAbsent(s, index);
         return index;
     }
 

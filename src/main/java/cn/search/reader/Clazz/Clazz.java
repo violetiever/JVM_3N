@@ -133,7 +133,7 @@ public class Clazz {
             // 判空，防止8字节常量占用两个表元素空间的情况
             if(Objects.nonNull(this.constantPool[i])) {
                 this.constantPool[i].initConstant(constantPool);
-                this.constantPool[i].link();
+//                this.constantPool[i].link();
             }
         }
 
@@ -174,8 +174,6 @@ public class Clazz {
             attributes[i] = AttributeInfo.getAttributeInfoByNameIndex(dataInput, this.constantPool);
         }
 
-
-        System.out.println("test");
     }
 
     public U4 getMagic() {
