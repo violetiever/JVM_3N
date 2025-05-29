@@ -2,6 +2,8 @@ package cn.search.reader;
 
 
 import cn.search.reader.Clazz.Clazz;
+import cn.search.reader.ClazzLoader.BootStrapClazzLoader;
+import cn.search.reader.ClazzLoader.ExtClazzLoader;
 import cn.search.runtime.MethodArea;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,15 +22,24 @@ public class ClassFileReader {
         System.out.println(javaHome);
 
         // 将lib文件夹下的jar包懒加载到方法区
-        List<JarFile> allFileList = new ArrayList<>();
-        getAllJarFile(new File(javaHome + "\\lib"), allFileList);
-        allFileList.forEach(ClassFileReader::lazyLoadJarClass);
+        List<JarFile> libFileList = new ArrayList<>();
+        getAllJarFile(new File(javaHome + "\\lib"), libFileList);
+
+
+        BootStrapClazzLoader bootStrapClazzLoader = BootStrapClazzLoader.getInstance();
+        libFileList.forEach(bootStrapClazzLoader::lazyLoadJarClass);
+
+        List<JarFile> extFileList = new ArrayList<>();
+        getAllJarFile(new File(javaHome + "\\lib\\ext"), extFileList);
+
+        ExtClazzLoader extClazzLoader = ExtClazzLoader.getInstance();
+        extFileList.forEach(extClazzLoader::lazyLoadJarClass);
 
         Clazz clazz = ClassFileReader.ClassFileToClazz("G:/project/JVM_3N/ClassFileReader.class");
 
 
         // 关闭所有文件流
-        allFileList.forEach(f-> {
+        libFileList.forEach(f-> {
             try {
                 f.close();
             } catch (IOException e) {
@@ -105,61 +116,13 @@ public class ClassFileReader {
         return clazz;
     }
 
-    /**
-     * 懒加载jar包
-     * @param jarFile
-     */
-    public static void lazyLoadJarClass(JarFile jarFile){
-        try {
-            Enumeration<JarEntry> entries = jarFile.entries();
-            while (entries.hasMoreElements()) {
-                JarEntry entry = entries.nextElement();
-                String entryName = entry.getName();
-                if (entryName.endsWith(".class")) {
-                    MethodArea.LAZY_CLAZZ_MAP.put(entryName.substring(0, entryName.length() - 6), jarFile.getInputStream(entry));
-                }
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static void loadJarClass(String jarPath, List<String> classList) {
-        JarFile jarFile;
-        try {
-            jarFile = new JarFile(jarPath);
-            Enumeration<JarEntry> entries = jarFile.entries();
-            while (entries.hasMoreElements()) {
-                JarEntry entry = entries.nextElement();
-                String entryName = entry.getName();
-                String fullName = entryName.substring(0, entryName.length() - 6);
-                if (entryName.endsWith(".class") && classList.contains(fullName)) {
-                    System.out.println(entryName);
-                    MethodArea.CLAZZ_MAP.put(fullName, null);
-                    InputStream inputStream = jarFile.getInputStream(entry);
-                    Clazz entryClazz = ClassFileReader.ClassFileToClazz(inputStream);
-                    inputStream.close();
-                    MethodArea.CLAZZ_MAP.remove(fullName);
-                    MethodArea.CLAZZ_MAP.put(fullName, entryClazz);
-
-                }
-            }
-            jarFile.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     public static void getAllJarFile(File fileInput, List<JarFile> allFileList) {
         // 获取文件列表
         File[] fileList = fileInput.listFiles();
         assert fileList != null;
         for (File file : fileList) {
-            if (file.isDirectory()) {
-                // 递归处理文件夹
-                // 如果不想统计子文件夹则可以将下一行注释掉
-                getAllJarFile(file, allFileList);
-            } else if(file.getName().endsWith(".jar")){
+            if(file.getName().endsWith(".jar")){
                 // 如果是jar包则将其加入到list中
                 try {
                     allFileList.add(new JarFile(file));
