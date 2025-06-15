@@ -2,26 +2,22 @@ package cn.search.runtime;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 
 @Slf4j
 public class Heap {
 
-
-
     /**
      * 反向字符串常量池，存储字符串对应的索引 todo 修改为码点当作key
      */
-    public static HashMap<String, Integer> CONSTANT_STRING_POOL = new HashMap<>();
-
+    public static final HashMap<String, Integer> CONSTANT_STRING_POOL = new HashMap<>();
 
     /**
      * 对象池
      */
-    public static HashMap<Integer, Object> OBJECT_POOL = new HashMap<>();
+    public static final HashMap<Integer, Object> OBJECT_POOL = new HashMap<>();
 
-    public static HashMap<Object, Integer> OBJECT_POOL_REVERSE = new HashMap<>();
+    public static final HashMap<Object, Integer> OBJECT_POOL_REVERSE = new HashMap<>();
 
     public static Integer putIntoConstantStringPool(String s) {
         Integer index = putIntoObjectPool(s);
@@ -37,14 +33,24 @@ public class Heap {
      */
     public static Integer putIntoObjectPool(Object o) {
         if (Heap.OBJECT_POOL_REVERSE.get(o) == null) {
-            int poolIndex = Heap.OBJECT_POOL.size();
-            Heap.OBJECT_POOL.put(poolIndex, o);
-            Heap.OBJECT_POOL_REVERSE.put(o, poolIndex);
+            int poolIndex;
+            synchronized (Heap.OBJECT_POOL) {
+                if (Heap.OBJECT_POOL_REVERSE.get(o) == null) {
+                    poolIndex = Heap.OBJECT_POOL.size();
+                    Heap.OBJECT_POOL.put(poolIndex, o);
+                    Heap.OBJECT_POOL_REVERSE.put(o, poolIndex);
+                }else {
+                    return Heap.OBJECT_POOL_REVERSE.get(o);
+                }
+            }
             return poolIndex;
         } else {
-            return OBJECT_POOL_REVERSE.get(o);
+            return Heap.OBJECT_POOL_REVERSE.get(o);
         }
     }
 
+    public static Object getObjectFromPool(Integer index) {
+        return Heap.OBJECT_POOL.get(index);
+    }
 
 }
