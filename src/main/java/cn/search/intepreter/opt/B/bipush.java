@@ -1,17 +1,20 @@
 package cn.search.intepreter.opt.B;
 
 import cn.search.intepreter.opt.Opcode;
-import cn.search.reader.Clazz.CpInfo.ConstantCpInfo;
 import cn.search.reader.Usinged.U1;
-import cn.search.runtime.RunTime;
+import cn.search.runtime.Frame;
 
+/**
+ * Java虚拟机规范.Java SE 8版 240页
+ */
 public class bipush implements Opcode {
 
     @Override
-    public void opt(RunTime runTime, ConstantCpInfo[] constantPool, U1[] code) {
-        int pc = runTime.getPc();
-        U1 instantNum = code[pc + 1];
-        runTime.getStackFrame().push(instantNum.getValue());
+    public void opt(Frame frame) {
+        int pc = frame.getPc();
+        U1 instantNum = frame.getCode()[pc + 1];
+        frame.getOperandStack().push(instantNum.getValue());
+        frame.setPc(pc + 1);
     }
 
 }

@@ -1,15 +1,16 @@
 package cn.search.intepreter.opt.F.Load;
 
 import cn.search.intepreter.opt.Opcode;
-import cn.search.reader.Clazz.CpInfo.ConstantCpInfo;
-import cn.search.reader.Usinged.U1;
-import cn.search.runtime.RunTime;
+import cn.search.runtime.Frame;
 
+/**
+ * Java虚拟机规范.Java SE 8版 260页
+ */
 public class fload_1 implements Opcode {
 
     @Override
-    public void opt(RunTime runTime, ConstantCpInfo[] constantPool, U1[] code) {
-
+    public void opt(Frame frame) {
+        fload.floadBasic(frame, 1);
     }
 
 }

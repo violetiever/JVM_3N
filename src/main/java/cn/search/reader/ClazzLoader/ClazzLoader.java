@@ -1,6 +1,10 @@
 package cn.search.reader.ClazzLoader;
 
 import cn.search.reader.Clazz.Clazz;
+import cn.search.reader.Clazz.CpInfo.ConstantClassInfo;
+import cn.search.reader.Clazz.CpInfo.ConstantUtf8Info;
+import cn.search.reader.Enum.SpecialClazzType;
+import cn.search.reader.Usinged.U2;
 import cn.search.runtime.Heap;
 import cn.search.runtime.MethodArea;
 import lombok.Data;
@@ -10,8 +14,11 @@ import java.io.*;
 import java.nio.file.Files;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
+import static cn.search.reader.Enum.SpecialClazzType.Array;
 
 /**
  * todo 1.增加从Path实时加载的类加载方式
@@ -28,6 +35,26 @@ public abstract class ClazzLoader {
 
     // 当前类加载器的路径，当前类加载器负责路径内的类加载
     private String[] clazzPath;
+
+    static {
+        // 直接加载特殊类型的clazz对象，不通过类加载机制
+        for (SpecialClazzType clazzType : SpecialClazzType.values()) {
+            if (Objects.isNull(clazzType.getClazzName()))
+                continue;
+            Clazz clazz = new Clazz(clazzType.getClazzName());
+            Integer index = Heap.putIntoObjectPool(clazz);
+            MethodArea.CLAZZ_MAP.put(clazzType.getClazzName(), index);
+        }
+    }
+
+    private static final ConstantClassInfo[] arrayClazzInterfaces = new ConstantClassInfo[]{
+            new ConstantClassInfo().setName(new ConstantUtf8Info().setUtf8Info("java/lang/Cloneable")),
+            new ConstantClassInfo().setName(new ConstantUtf8Info().setUtf8Info("java/io/Serializable"))
+    };
+
+    private static final ConstantClassInfo objectClazz = new ConstantClassInfo().setName(new ConstantUtf8Info().setUtf8Info("java/lang/Object"));
+
+    private static final String[] arrayAccessFlag = Clazz.resolveAccessFlag(new U2(1041));
 
     public ClazzLoader(ClazzLoader parentClazzLoader, String[] clazzPath) {
         this.parentClazzLoader = parentClazzLoader;
@@ -89,6 +116,27 @@ public abstract class ClazzLoader {
             return this.defineClazz(name);
         } else {
             // 尝试在clazzPath中查找全限定名
+            return null;
+        }
+    }
+
+    // 根据全限定名加载数组类的clazz对象，不通过类加载机制
+    public static Clazz loadArrayClazz(String name) {
+        // 判断是否为数组
+        if (name.startsWith(Array.getDescriptor())) {
+            Clazz arrayClazz = (Clazz) Heap.getObjectFromPool(MethodArea.CLAZZ_MAP.get(name));
+            if (Objects.isNull(arrayClazz)) {
+                arrayClazz = new Clazz(name);
+                arrayClazz.setInterfacesInfo(arrayClazzInterfaces);
+                arrayClazz.setSuperClassInfo(objectClazz);
+                arrayClazz.setClazzLoader(AppClazzLoader.getInstance());
+                arrayClazz.setAccessFlagsName(arrayAccessFlag);
+                Integer index = Heap.putIntoObjectPool(arrayClazz);
+                MethodArea.CLAZZ_MAP.put(name, index);
+            }
+            return arrayClazz;
+        } else {
+            log.error("ClazzLoader loadArrayClazz not arrayClazz name = {}", name);
             return null;
         }
     }

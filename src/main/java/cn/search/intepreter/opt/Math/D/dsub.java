@@ -1,15 +1,19 @@
 package cn.search.intepreter.opt.Math.D;
 
 import cn.search.intepreter.opt.Opcode;
-import cn.search.reader.Clazz.CpInfo.ConstantCpInfo;
-import cn.search.reader.Usinged.U1;
-import cn.search.runtime.RunTime;
+import cn.search.runtime.Frame;
 
+/**
+ * Java虚拟机规范.Java SE 8版 252页
+ */
 public class dsub implements Opcode {
 
     @Override
-    public void opt(RunTime runTime, ConstantCpInfo[] constantPool, U1[] code) {
-
+    public void opt(Frame frame) {
+        double value2 = (double) frame.getOperandStack().pop();
+        double value1 = (double) frame.getOperandStack().pop();
+        double result = value1 - value2;
+        frame.getOperandStack().push(result);
     }
 
 }

@@ -1,13 +1,14 @@
 package cn.search.intepreter.opt;
 
-import cn.search.reader.Clazz.CpInfo.ConstantCpInfo;
-import cn.search.reader.Usinged.U1;
-import cn.search.runtime.RunTime;
+import cn.search.runtime.Frame;
 
+/**
+ * Java虚拟机规范.Java SE 8版 312页
+ */
 public class nop implements Opcode {
 
     @Override
-    public void opt(RunTime runTime, ConstantCpInfo[] constantPool, U1[] code) {
+    public void opt(Frame frame) {
 
     }
 

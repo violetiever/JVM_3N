@@ -2,7 +2,6 @@ package cn.search.reader.Clazz.AttributeInfo.VerificationTypeInfo;
 
 import cn.search.reader.Clazz.CpInfo.ConstantCpInfo;
 import cn.search.reader.Usinged.U1;
-import cn.search.reader.Utils.CopyFieldUtil;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;

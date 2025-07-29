@@ -1,15 +1,19 @@
 package cn.search.intepreter.opt.Math.L;
 
 import cn.search.intepreter.opt.Opcode;
-import cn.search.reader.Clazz.CpInfo.ConstantCpInfo;
-import cn.search.reader.Usinged.U1;
-import cn.search.runtime.RunTime;
+import cn.search.runtime.Frame;
 
+/**
+ * Java虚拟机规范.Java SE 8版 296页
+ */
 public class land implements Opcode {
 
     @Override
-    public void opt(RunTime runTime, ConstantCpInfo[] constantPool, U1[] code) {
-
+    public void opt(Frame frame) {
+        long value2 = (long) frame.getOperandStack().pop();
+        long value1 = (long) frame.getOperandStack().pop();
+        long result = value1 & value2;
+        frame.getOperandStack().push(result);
     }
 
 }

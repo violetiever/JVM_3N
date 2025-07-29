@@ -1,6 +1,7 @@
 package cn.search.reader.Clazz.CpInfo;
 
 import cn.search.Annotation.ClazzConstructor;
+import cn.search.Annotation.ClazzCpInfoInit;
 import cn.search.Annotation.ClazzField;
 import cn.search.reader.Usinged.U1;
 import cn.search.reader.Usinged.U2;
@@ -23,8 +24,12 @@ public class ConstantMethodHandleInfo extends ConstantCpInfo {
     @ClazzField(order = 1)
     private U2 referenceIndex;
 
+    @ClazzCpInfoInit(order = 2, initOrder = 1)
+    private ConstantRefInfo reference;
+
     public ConstantMethodHandleInfo(DataInputStream dataInput) {
 
     }
+
 
 }

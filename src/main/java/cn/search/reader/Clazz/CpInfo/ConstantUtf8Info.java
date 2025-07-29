@@ -6,12 +6,14 @@ import cn.search.reader.Usinged.U1;
 import cn.search.reader.Usinged.U2;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
 import java.io.DataInputStream;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ClazzConstructor
+@Accessors(chain = true)
 public class ConstantUtf8Info extends ConstantCpInfo {
 
     // u2
@@ -22,6 +24,10 @@ public class ConstantUtf8Info extends ConstantCpInfo {
     private U1[] bytes;
 
     private String utf8Info;
+
+    public ConstantUtf8Info(){
+
+    }
 
     public ConstantUtf8Info(DataInputStream dataInput) {
         int len = this.length.getValue();

@@ -2,19 +2,19 @@ package cn.search.reader.Clazz;
 
 
 import cn.search.reader.Clazz.AttributeInfo.AttributeInfo;
-import cn.search.reader.Clazz.CpInfo.ConstantClassInfo;
-import cn.search.reader.Clazz.CpInfo.ConstantCpInfo;
-import cn.search.reader.Clazz.CpInfo.ConstantDoubleInfo;
-import cn.search.reader.Clazz.CpInfo.ConstantLongInfo;
+import cn.search.reader.Clazz.CpInfo.*;
 import cn.search.reader.Clazz.FieldInfo.FieldInfo;
 import cn.search.reader.Clazz.MethodInfo.MethodInfo;
 import cn.search.reader.ClazzLoader.ClazzLoader;
 import cn.search.reader.Usinged.U2;
 import cn.search.reader.Usinged.U4;
+import cn.search.reader.Utils.DescriptorUtil;
 import lombok.AllArgsConstructor;
 
 import java.io.DataInputStream;
 import java.util.*;
+
+import static cn.search.reader.Enum.SpecialClazzType.Array;
 
 @AllArgsConstructor
 public class Clazz {
@@ -34,6 +34,15 @@ public class Clazz {
         ACCESS_FLAGS_MAP.put(0x2000, "ACC_ANNOTATION");
         ACCESS_FLAGS_MAP.put(0x4000, "ACC_ENUM");
         ACCESS_FLAGS_MAP.put(0x8000, "ACC_MANDATED");
+    }
+
+
+    // 生成特殊的clazz对象，例如原始数据类型
+    public Clazz(String name) {
+        this.thisClassInfo = new ConstantClassInfo();
+        ConstantUtf8Info utf8Name = new ConstantUtf8Info();
+        utf8Name.setUtf8Info(name);
+        this.thisClassInfo.setName(utf8Name);
     }
 
     public static String[] resolveAccessFlag(U2 accessFlags) {
@@ -124,13 +133,13 @@ public class Clazz {
         for (int i = 0; i < constantPoolLen; i++) {
             this.constantPool[i] = ConstantCpInfo.getCpInfoByTag(dataInput, constantPool);
             // 如果是8字节常量则占用两个表元素空间
-            if(this.constantPool[i] instanceof ConstantLongInfo || this.constantPool[i] instanceof ConstantDoubleInfo){
+            if (this.constantPool[i] instanceof ConstantLongInfo || this.constantPool[i] instanceof ConstantDoubleInfo) {
                 i++;
             }
         }
         for (int i = 0; i < constantPoolLen; i++) {
             // 判空，防止8字节常量占用两个表元素空间的情况
-            if(Objects.nonNull(this.constantPool[i])) {
+            if (Objects.nonNull(this.constantPool[i])) {
                 this.constantPool[i].initConstant(constantPool);
 //                this.constantPool[i].link();
             }
@@ -173,6 +182,47 @@ public class Clazz {
             attributes[i] = AttributeInfo.getAttributeInfoByNameIndex(dataInput, this.constantPool);
         }
 
+    }
+
+    // 将内部全限定名转换为全限定名返回
+    public String getName() {
+        return this.thisClassInfo.getName().getUtf8Info().replace("/", ".");
+    }
+
+    // 获取组件类型的clazz对象
+    public Clazz getComponentType() {
+        if (isArray()) {
+            return DescriptorUtil.getClazzBySingleDescriptor(this.thisClassInfo.getName().getUtf8Info().substring(1), this.getClazzLoader());
+        }
+        return null;
+    }
+
+    public boolean isArray() {
+        return this.getName().startsWith(Array.getDescriptor());
+    }
+
+    public ConstantClassInfo getSuperClassInfo() {
+        return superClassInfo;
+    }
+
+    public void setSuperClassInfo(ConstantClassInfo superClassInfo) {
+        this.superClassInfo = superClassInfo;
+    }
+
+    public ConstantClassInfo[] getInterfacesInfo() {
+        return interfacesInfo;
+    }
+
+    public void setInterfacesInfo(ConstantClassInfo[] interfacesInfo) {
+        this.interfacesInfo = interfacesInfo;
+    }
+
+    public String[] getAccessFlagsName() {
+        return accessFlagsName;
+    }
+
+    public void setAccessFlagsName(String[] accessFlagsName) {
+        this.accessFlagsName = accessFlagsName;
     }
 
     public ClazzLoader getClazzLoader() {
