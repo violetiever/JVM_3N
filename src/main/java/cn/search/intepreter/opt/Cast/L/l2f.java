@@ -10,7 +10,9 @@ public class l2f implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-
+        long value = (long) frame.getOperandStack().pop();
+        float result = (float) value;
+        frame.getOperandStack().push(result);
     }
 
 }

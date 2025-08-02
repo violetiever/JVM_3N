@@ -54,4 +54,9 @@ public class Frame {
      */
     private Clazz currentClazz;
 
+    public U1 getNextCode() {
+        this.pc++;
+        return this.getCode()[pc];
+    }
+
 }

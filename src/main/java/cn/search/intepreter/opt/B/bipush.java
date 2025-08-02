@@ -11,10 +11,8 @@ public class bipush implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-        int pc = frame.getPc();
-        U1 instantNum = frame.getCode()[pc + 1];
-        frame.getOperandStack().push(instantNum.getValue());
-        frame.setPc(pc + 1);
+        int instantNum = frame.getNextCode().getValue();
+        frame.getOperandStack().push(instantNum);
     }
 
 }

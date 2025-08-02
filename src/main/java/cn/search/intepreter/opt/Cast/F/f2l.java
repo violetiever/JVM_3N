@@ -10,7 +10,9 @@ public class f2l implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-
+        float value = (float) frame.getOperandStack().pop();
+        long result = (long) value;
+        frame.getOperandStack().push(result);
     }
 
 }

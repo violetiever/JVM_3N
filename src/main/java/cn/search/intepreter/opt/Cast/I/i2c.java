@@ -10,7 +10,9 @@ public class i2c implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-
+        int value = (int) frame.getOperandStack().pop();
+        int result = (byte) (value & 0xFF);
+        frame.getOperandStack().push(result);
     }
 
 }

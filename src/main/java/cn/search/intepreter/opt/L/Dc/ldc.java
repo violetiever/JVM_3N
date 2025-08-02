@@ -15,13 +15,11 @@ public class ldc implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-        int pc = frame.getPc();
-        U1 index = frame.getCode()[pc + 1];
-        ldcBasic(frame,index.getValue());
-        frame.setPc(pc + 1);
+        int index = frame.getNextCode().getValue();
+        ldcBasic(frame, index);
     }
 
-    public static void ldcBasic(Frame frame,int index){
+    public static void ldcBasic(Frame frame, int index) {
         ConstantCpInfo constantCpInfo = frame.getRuntimeConstantPool()[index];
         Object temp = null;
         if (constantCpInfo.getClass().isInstance(ConstantIntegerInfo.class)) {

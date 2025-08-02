@@ -10,10 +10,8 @@ public class ldc_w implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-        int pc = frame.getPc();
-        int index = (frame.getCode()[pc + 1].getValue() << 8) | (frame.getCode()[pc + 2].getValue());
+        int index = (frame.getNextCode().getValue() << 8) | (frame.getNextCode().getValue());
         ldc.ldcBasic(frame, index);
-        frame.setPc(pc + 2);
     }
 
 }

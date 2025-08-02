@@ -10,7 +10,9 @@ public class f2i implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-
+        float value = (float) frame.getOperandStack().pop();
+        int result = (int) value;
+        frame.getOperandStack().push(result);
     }
 
 }

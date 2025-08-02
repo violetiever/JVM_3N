@@ -10,7 +10,9 @@ public class i2l implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-
+        int value = (int) frame.getOperandStack().pop();
+        long result = value;
+        frame.getOperandStack().push(result);
     }
 
 }

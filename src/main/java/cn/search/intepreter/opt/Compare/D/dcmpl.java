@@ -10,7 +10,18 @@ public class dcmpl implements Opcode {
 
     @Override
     public void opt(Frame frame) {
+        dcmpBasic(frame, -1);
+    }
 
+    public static void dcmpBasic(Frame frame, int nanResult) {
+        double value2 = (double) frame.getOperandStack().pop();
+        double value1 = (double) frame.getOperandStack().pop();
+        int result;
+        if (Double.isNaN(value1) || Double.isNaN(value2))
+            result = nanResult;
+        else
+            result = value1 > value2 ? 1 : (value1 == value2 ? 0 : -1);
+        frame.getOperandStack().push(result);
     }
 
 }

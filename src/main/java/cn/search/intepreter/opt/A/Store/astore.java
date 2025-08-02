@@ -10,10 +10,8 @@ public class astore implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-        int pc = frame.getPc();
-        int index = frame.getCode()[pc + 1].getValue();
+        int index = frame.getNextCode().getValue();
         astoreBasic(frame, index);
-        frame.setPc(pc + 1);
     }
 
     public static void astoreBasic(Frame frame, int index) {

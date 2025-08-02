@@ -10,7 +10,9 @@ public class d2l implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-
+        double value = (double) frame.getOperandStack().pop();
+        long result = (long) value;
+        frame.getOperandStack().push(result);
     }
 
 }

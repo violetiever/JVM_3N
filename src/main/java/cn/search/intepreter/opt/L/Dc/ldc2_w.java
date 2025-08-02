@@ -13,17 +13,15 @@ public class ldc2_w implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-        int pc = frame.getPc();
-        int index = (frame.getCode()[pc + 1].getValue() << 8) | (frame.getCode()[pc + 2].getValue());
+        int index = (frame.getNextCode().getValue() << 8) | (frame.getNextCode().getValue());
         ConstantCpInfo constantCpInfo = frame.getRuntimeConstantPool()[index];
-        Object temp = null;
-        if(constantCpInfo instanceof ConstantLongInfo){
-            temp = ((ConstantLongInfo) constantCpInfo).getLongValue();
-        }else if(constantCpInfo instanceof ConstantDoubleInfo){
-            temp = ((ConstantDoubleInfo) constantCpInfo).getDoubleValue();
+        Object value = null;
+        if (constantCpInfo instanceof ConstantLongInfo) {
+            value = ((ConstantLongInfo) constantCpInfo).getLongValue();
+        } else if (constantCpInfo instanceof ConstantDoubleInfo) {
+            value = ((ConstantDoubleInfo) constantCpInfo).getDoubleValue();
         }
-        frame.getOperandStack().push(temp);
-        frame.setPc(pc + 2);
+        frame.getOperandStack().push(value);
     }
 
 }

@@ -10,7 +10,9 @@ public class i2s implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-
+        int value = (int) frame.getOperandStack().pop();
+        int result = (short) value;
+        frame.getOperandStack().push(result);
     }
 
 }

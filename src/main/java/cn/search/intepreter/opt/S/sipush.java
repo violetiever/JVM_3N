@@ -11,12 +11,10 @@ public class sipush implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-        int pc = frame.getPc();
-        U1 instantNumHigh = frame.getCode()[pc + 1];
-        U1 instantNumLow = frame.getCode()[pc + 2];
-        int instantNum = (short) instantNumHigh.getValue() << 8 | instantNumLow.getValue();
+        int instantNumHigh = frame.getNextCode().getValue();
+        int instantNumLow = frame.getNextCode().getValue();
+        int instantNum = (short) instantNumHigh << 8 | instantNumLow;
         frame.getOperandStack().push(instantNum);
-        frame.setPc(pc + 2);
     }
 
 }

@@ -10,7 +10,9 @@ public class i2f implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-
+        int value = (int) frame.getOperandStack().pop();
+        float result = value;
+        frame.getOperandStack().push(result);
     }
 
 }

@@ -10,7 +10,9 @@ public class d2f implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-
+        double value = (double) frame.getOperandStack().pop();
+        float result = (float) value;
+        frame.getOperandStack().push(result);
     }
 
 }

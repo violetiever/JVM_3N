@@ -10,7 +10,9 @@ public class l2d implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-
+        long value = (long) frame.getOperandStack().pop();
+        double result = value;
+        frame.getOperandStack().push(result);
     }
 
 }
