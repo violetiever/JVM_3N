@@ -10,7 +10,9 @@ public class _goto implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-
+        int branchbyte1 = frame.getNextCode().getValue();
+        int branchbyte2 = frame.getNextCode().getValue();
+        frame.setPc(frame.getPc() + ((branchbyte1 << 8) | branchbyte2));
     }
 
 }

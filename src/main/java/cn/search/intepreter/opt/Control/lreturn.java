@@ -10,7 +10,9 @@ public class lreturn implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-
+        long value = (long) frame.getOperandStack().pop();
+        frame = frame.getPreFrame();
+        frame.getOperandStack().push(value);
     }
 
 }

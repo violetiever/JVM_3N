@@ -10,7 +10,7 @@ public class _return implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-
+        frame = frame.getPreFrame();
     }
 
 }

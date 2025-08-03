@@ -10,7 +10,11 @@ public class jsr implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-
+        int address = frame.getPc() + 1;
+        int branchbyte1 = frame.getNextCode().getValue();
+        int branchbyte2 = frame.getNextCode().getValue();
+        frame.setPc(frame.getPc() + ((branchbyte1 << 8) | branchbyte2));
+        frame.getOperandStack().push(address);
     }
 
 }

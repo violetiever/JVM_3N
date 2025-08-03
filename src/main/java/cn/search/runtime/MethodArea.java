@@ -1,8 +1,5 @@
 package cn.search.runtime;
 
-import cn.search.reader.Clazz.Clazz;
-
-import java.io.InputStream;
 import java.util.HashMap;
 
 public class MethodArea {

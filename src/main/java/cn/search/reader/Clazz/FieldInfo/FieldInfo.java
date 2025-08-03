@@ -40,6 +40,8 @@ public class FieldInfo {
 
     private ConstantUtf8Info descriptor;
 
+    // 指向对象的引用
+    private Integer objectRef;
 
     public FieldInfo() {
 

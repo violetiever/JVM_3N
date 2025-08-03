@@ -10,7 +10,9 @@ public class ireturn implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-
+        int value = (int) frame.getOperandStack().pop();
+        frame = frame.getPreFrame();
+        frame.getOperandStack().push(value);
     }
 
 }

@@ -10,7 +10,9 @@ public class dreturn implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-
+        double value = (double) frame.getOperandStack().pop();
+        frame = frame.getPreFrame();
+        frame.getOperandStack().push(value);
     }
 
 }
