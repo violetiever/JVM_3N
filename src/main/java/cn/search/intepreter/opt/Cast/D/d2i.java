@@ -13,6 +13,7 @@ public class d2i implements Opcode {
         double value = (double) frame.getOperandStack().pop();
         int result = (int) value;
         frame.getOperandStack().push(result);
+        frame.getNextCode();
     }
 
 }

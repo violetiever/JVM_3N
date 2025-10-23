@@ -10,8 +10,10 @@ public class pop2 implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-        frame.getOperandStack().pop();
-        frame.getOperandStack().pop();
+        Object value = frame.getOperandStack().pop();
+        if (!(value instanceof Long || value instanceof Double))
+            frame.getOperandStack().pop();
+        frame.getNextCode();
     }
 
 }

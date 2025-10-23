@@ -11,6 +11,7 @@ public class dload_2 implements Opcode {
     @Override
     public void opt(Frame frame) {
         dload.dloadBasic(frame, 2);
+        frame.getNextCode();
     }
 
 }

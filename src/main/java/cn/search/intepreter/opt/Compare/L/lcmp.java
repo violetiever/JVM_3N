@@ -14,6 +14,7 @@ public class lcmp implements Opcode {
         long value1 = (long) frame.getOperandStack().pop();
         int result = value1 > value2 ? 1 : (value1 == value2 ? 0 : -1);
         frame.getOperandStack().push(result);
+        frame.getNextCode();
     }
 
 }

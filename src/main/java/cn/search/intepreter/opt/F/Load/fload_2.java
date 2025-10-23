@@ -11,6 +11,7 @@ public class fload_2 implements Opcode {
     @Override
     public void opt(Frame frame) {
         fload.floadBasic(frame, 2);
+        frame.getNextCode();
     }
 
 }

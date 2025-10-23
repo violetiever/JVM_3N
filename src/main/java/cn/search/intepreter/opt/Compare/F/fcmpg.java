@@ -11,6 +11,7 @@ public class fcmpg implements Opcode {
     @Override
     public void opt(Frame frame) {
         fcmpl.fcmpBasic(frame, 1);
+        frame.getNextCode();
     }
 
 }

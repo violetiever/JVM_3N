@@ -13,6 +13,7 @@ public class d2f implements Opcode {
         double value = (double) frame.getOperandStack().pop();
         float result = (float) value;
         frame.getOperandStack().push(result);
+        frame.getNextCode();
     }
 
 }

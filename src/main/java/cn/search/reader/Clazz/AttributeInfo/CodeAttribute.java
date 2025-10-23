@@ -3,12 +3,12 @@ package cn.search.reader.Clazz.AttributeInfo;
 import cn.search.Annotation.*;
 import cn.search.reader.Clazz.CpInfo.ConstantClassInfo;
 import cn.search.reader.Clazz.CpInfo.ConstantCpInfo;
-import cn.search.reader.Clazz.CpInfo.ConstantUtf8Info;
 import cn.search.reader.Usinged.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.DataInputStream;
+import java.util.Arrays;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -49,42 +49,27 @@ public class CodeAttribute extends AttributeInfo {
 
 
     public CodeAttribute(DataInputStream dataInput, ConstantCpInfo[] constantPool) {
-
         for (ExceptionTable table : exceptionTable) {
             int catchTypeIndex = table.getCatchType().getValue();
             if (catchTypeIndex != 0)
                 table.setCatchClass((ConstantClassInfo) constantPool[catchTypeIndex - 1]);
         }
-
     }
 
-}
+    public AttributeInfo getAttributeByClass(Class clazz){
+        for (AttributeInfo attribute : this.attributes)
+            if(attribute.getClass() == clazz)
+                return attribute;
+        return null;
+    }
 
-
-@Data
-@ClazzConstructor
-class ExceptionTable {
-
-    // u2
-    @ClazzField(order = 0)
-    private U2 startPc;
-
-    // u2
-    @ClazzField(order = 1)
-    private U2 endPc;
-
-    // u2
-    @ClazzField(order = 2)
-    private U2 handlerPc;
-
-    // u2
-    @ClazzField(order = 3)
-    private U2 catchType;
-
-    private ConstantClassInfo catchClass;
-
-    public ExceptionTable(DataInputStream dataInput) {
-
+    @Override
+    public String toString() {
+        return "CodeAttribute{" + "\n" +
+                "code=" + Arrays.toString(code) + "\n" +
+                ", exceptionTable=" + Arrays.toString(exceptionTable) + "\n" +
+                ", attributes=" + Arrays.toString(attributes) + "\n" +
+                '}';
     }
 
 }

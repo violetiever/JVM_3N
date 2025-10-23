@@ -21,6 +21,7 @@ public class dup2 implements Opcode {
             valueList.add(frame.getOperandStack().pop());
 
         dup.dupPush(frame, valueList, valueList);
+        frame.getNextCode();
     }
 
 }

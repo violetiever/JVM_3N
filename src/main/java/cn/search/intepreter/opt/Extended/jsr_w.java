@@ -10,7 +10,10 @@ public class jsr_w implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-
+        int branchByte = (frame.getNextCode() << 24) | (frame.getNextCode() << 16) | (frame.getNextCode() << 8) | frame.getNextCode();
+        int address = frame.getNextCode();
+        frame.getOperandStack().push(address);
+        frame.setPc(frame.getPc() + branchByte);
     }
 
 }

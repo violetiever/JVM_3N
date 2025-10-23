@@ -11,6 +11,7 @@ public class aconst_null implements Opcode {
     @Override
     public void opt(Frame frame) {
         frame.getOperandStack().push(null);
+        frame.getNextCode();
     }
 
 }

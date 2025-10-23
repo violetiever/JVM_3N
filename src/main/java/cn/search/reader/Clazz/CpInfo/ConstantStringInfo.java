@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.DataInputStream;
+import java.util.Objects;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -33,10 +34,17 @@ public class ConstantStringInfo extends ConstantCpInfo {
     }
 
     @Override
-    public void link(){
+    public void link() {
         // 放入常量池
         index = Heap.putIntoConstantStringPool(string.getUtf8Info());
     }
 
+    @Override
+    public void invoke() {
+        if (Objects.isNull(this.invokeObject)) {
+            String utf8Info = string.getUtf8Info();
+            this.invokeObject = utf8Info;
+        }
+    }
 
 }

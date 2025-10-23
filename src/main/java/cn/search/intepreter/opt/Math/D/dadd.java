@@ -14,6 +14,7 @@ public class dadd implements Opcode {
         double value1 = (double) frame.getOperandStack().pop();
         double result = value1 + value2;
         frame.getOperandStack().push(result);
+        frame.getNextCode();
     }
 
 }

@@ -10,7 +10,7 @@ public class monitorexit implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-
+        frame.getNextCode();
     }
 
 }

@@ -17,6 +17,7 @@ public class dup implements Opcode {
         List<Object> valueList = new ArrayList<>();
         valueList.add(value);
         dupPush(frame, valueList, valueList);
+        frame.getNextCode();
     }
 
     // 按照顺序入栈

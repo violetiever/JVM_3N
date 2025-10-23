@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.DataInputStream;
+import java.util.Objects;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -20,8 +21,6 @@ public class ConstantFloatInfo extends ConstantCpInfo {
     private Float floatValue;
 
     public ConstantFloatInfo(DataInputStream dataInput) {
-
-
         long bits = this.bytes.getValue();
 
         if (bits == 0x7f800000) {
@@ -42,7 +41,12 @@ public class ConstantFloatInfo extends ConstantCpInfo {
                 (bits & 0x7fffff) | 0x800000;
 
         this.floatValue = (float) (s * m * 2 ^ (e - 150));
+    }
 
+    @Override
+    public void invoke() {
+        if (Objects.isNull(this.invokeObject))
+            this.invokeObject = this.floatValue;
     }
 
 }

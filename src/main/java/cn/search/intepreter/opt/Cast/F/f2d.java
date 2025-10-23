@@ -13,6 +13,7 @@ public class f2d implements Opcode {
         float value = (float) frame.getOperandStack().pop();
         double result = value;
         frame.getOperandStack().push(result);
+        frame.getNextCode();
     }
 
 }

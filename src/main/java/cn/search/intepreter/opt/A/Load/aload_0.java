@@ -11,6 +11,7 @@ public class aload_0 implements Opcode {
     @Override
     public void opt(Frame frame) {
         aload.aloadBasic(frame, 0);
+        frame.getNextCode();
     }
 
 }

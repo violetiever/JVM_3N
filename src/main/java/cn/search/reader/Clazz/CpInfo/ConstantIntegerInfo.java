@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.DataInputStream;
+import java.util.Objects;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -23,4 +24,9 @@ public class ConstantIntegerInfo extends ConstantCpInfo {
         integerValue = bytes.getValue();
     }
 
+    @Override
+    public void invoke() {
+        if (Objects.isNull(this.invokeObject))
+            this.invokeObject = this.integerValue;
+    }
 }

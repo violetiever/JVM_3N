@@ -15,6 +15,7 @@ public class ishl implements Opcode {
         int s = value2 & 0b11111;
         int result = value1 << s;
         frame.getOperandStack().push(result);
+        frame.getNextCode();
     }
 
 }

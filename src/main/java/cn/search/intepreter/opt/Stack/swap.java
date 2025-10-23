@@ -15,6 +15,7 @@ public class swap implements Opcode {
 
         frame.getOperandStack().push(value1);
         frame.getOperandStack().push(value2);
+        frame.getNextCode();
     }
 
 }

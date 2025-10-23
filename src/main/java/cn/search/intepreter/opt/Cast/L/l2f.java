@@ -13,6 +13,7 @@ public class l2f implements Opcode {
         long value = (long) frame.getOperandStack().pop();
         float result = (float) value;
         frame.getOperandStack().push(result);
+        frame.getNextCode();
     }
 
 }

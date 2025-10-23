@@ -30,20 +30,3 @@ public class LineNumberTableAttribute extends AttributeInfo {
 
 }
 
-@Data
-@ClazzConstructor
-class LineNumberTable {
-
-    // u2
-    @ClazzField(order = 0)
-    private U2 startPc;
-
-    // u2
-    @ClazzField(order = 1)
-    private U2 lineNumber;
-
-    public LineNumberTable(DataInputStream dataInput) {
-
-    }
-
-}

@@ -11,6 +11,7 @@ public class dcmpg implements Opcode {
     @Override
     public void opt(Frame frame) {
         dcmpl.dcmpBasic(frame, 1);
+        frame.getNextCode();
     }
 
 }

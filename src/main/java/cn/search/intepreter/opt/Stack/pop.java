@@ -11,6 +11,7 @@ public class pop implements Opcode {
     @Override
     public void opt(Frame frame) {
         frame.getOperandStack().pop();
+        frame.getNextCode();
     }
 
 }

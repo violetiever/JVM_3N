@@ -1,11 +1,8 @@
 package cn.search.intepreter.opt.L.Dc;
 
-import cn.search.intepreter.invoke.MethodHandle;
-import cn.search.intepreter.invoke.MethodType;
 import cn.search.intepreter.opt.Opcode;
 import cn.search.reader.Clazz.CpInfo.*;
 import cn.search.reader.ClazzLoader.AppClazzLoader;
-import cn.search.reader.Usinged.U1;
 import cn.search.runtime.Frame;
 
 /**
@@ -15,29 +12,33 @@ public class ldc implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-        int index = frame.getNextCode().getValue();
+        int index = frame.getNextCode();
         ldcBasic(frame, index);
+        frame.getNextCode();
     }
 
     public static void ldcBasic(Frame frame, int index) {
         ConstantCpInfo constantCpInfo = frame.getRuntimeConstantPool()[index];
         Object temp = null;
-        if (constantCpInfo.getClass().isInstance(ConstantIntegerInfo.class)) {
+        if (constantCpInfo instanceof ConstantIntegerInfo) {
             temp = ((ConstantIntegerInfo) constantCpInfo).getIntegerValue();
-        } else if (constantCpInfo.getClass().isInstance(ConstantFloatInfo.class)) {
+        } else if (constantCpInfo instanceof ConstantFloatInfo) {
             temp = ((ConstantFloatInfo) constantCpInfo).getFloatValue();
-        } else if (constantCpInfo.getClass().isInstance(ConstantStringInfo.class)) {
+        } else if (constantCpInfo instanceof ConstantStringInfo) {
             temp = ((ConstantStringInfo) constantCpInfo).getIndex();
-        } else if (constantCpInfo.getClass().isInstance(ConstantClassInfo.class)) {
+        } else if (constantCpInfo instanceof ConstantUtf8Info) {
+            temp = ((ConstantUtf8Info) constantCpInfo).getUtf8Info();
+        } else if (constantCpInfo instanceof ConstantClassInfo) {
             ConstantClassInfo constantClassInfo = (ConstantClassInfo) constantCpInfo;
             temp = AppClazzLoader.getInstance().loadClazz(constantClassInfo.getName().getUtf8Info());
-        } else if (constantCpInfo.getClass().isInstance(ConstantMethodTypeInfo.class)) {
+        } else if (constantCpInfo instanceof ConstantMethodTypeInfo) {
             ConstantMethodTypeInfo constantMethodTypeInfo = (ConstantMethodTypeInfo) constantCpInfo;
-            String descriptor = constantMethodTypeInfo.getDescriptor().getUtf8Info();
-            temp = new MethodType(descriptor);
-        } else if (constantCpInfo.getClass().isInstance(ConstantMethodHandleInfo.class)) {
+            constantMethodTypeInfo.invoke();
+            temp = constantMethodTypeInfo.getInvokeObject();
+        } else if (constantCpInfo instanceof ConstantMethodHandleInfo) {
             ConstantMethodHandleInfo constantMethodHandleInfo = (ConstantMethodHandleInfo) constantCpInfo;
-            temp = MethodHandle.getMethodHandleByConstantRefInfo(constantMethodHandleInfo.getReference());
+            constantMethodHandleInfo.invoke();
+            temp = constantMethodHandleInfo.getInvokeObject();
         }
         frame.getOperandStack().push(temp);
     }

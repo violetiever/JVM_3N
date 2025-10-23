@@ -10,13 +10,15 @@ public class fstore implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-        int index = frame.getNextCode().getValue();
+        int index = frame.getNextCode();
         fstoreBasic(frame, index);
+        frame.getNextCode();
     }
 
     public static void fstoreBasic(Frame frame, int index) {
         float value = (float) frame.getOperandStack().pop();
-        frame.getLocalVariable()[index] = (long) value;
+        // double转换成long的形式存储
+        frame.getLocalVariable()[index] = (long) Float.floatToIntBits(value);
     }
 
 }

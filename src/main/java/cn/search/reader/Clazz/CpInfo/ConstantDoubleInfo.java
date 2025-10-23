@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.DataInputStream;
+import java.util.Objects;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -24,7 +25,6 @@ public class ConstantDoubleInfo extends ConstantCpInfo {
     private Double doubleValue;
 
     public ConstantDoubleInfo(DataInputStream dataInput) {
-
         long bits = ((long) highBytes.getValue() << 32) + lowBytes.getValue();
 
         if (bits == 0x7ff0000000000000L) {
@@ -45,6 +45,12 @@ public class ConstantDoubleInfo extends ConstantCpInfo {
                 (bits & 0xfffffffffffffL) << 1 :
                 (bits & 0xfffffffffffffL) | 0x10000000000000L;
         this.doubleValue = (double) (s * m * 2 ^ (e - 1075));
+    }
+
+    @Override
+    public void invoke() {
+        if (Objects.isNull(this.invokeObject))
+            this.invokeObject = this.doubleValue;
     }
 
 }

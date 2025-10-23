@@ -10,8 +10,9 @@ public class lload implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-        int index = frame.getNextCode().getValue();
+        int index = frame.getNextCode();
         lloadBasic(frame, index);
+        frame.getNextCode();
     }
 
     public static void lloadBasic(Frame frame, int index) {

@@ -10,7 +10,8 @@ public class dstore_0 implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-
+        dstore.dstoreBasic(frame, 0);
+        frame.getNextCode();
     }
 
 }

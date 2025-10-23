@@ -14,6 +14,7 @@ public class iadd implements Opcode {
         int value1 = (int) frame.getOperandStack().pop();
         int result = value1 + value2;
         frame.getOperandStack().push(result);
+        frame.getNextCode();
     }
 
 }

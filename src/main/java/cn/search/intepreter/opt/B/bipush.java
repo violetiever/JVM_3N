@@ -1,7 +1,6 @@
 package cn.search.intepreter.opt.B;
 
 import cn.search.intepreter.opt.Opcode;
-import cn.search.reader.Usinged.U1;
 import cn.search.runtime.Frame;
 
 /**
@@ -11,8 +10,9 @@ public class bipush implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-        int instantNum = frame.getNextCode().getValue();
+        int instantNum = frame.getNextCode();
         frame.getOperandStack().push(instantNum);
+        frame.getNextCode();
     }
 
 }

@@ -11,6 +11,7 @@ public class astore_3 implements Opcode {
     @Override
     public void opt(Frame frame) {
         astore.astoreBasic(frame, 3);
+        frame.getNextCode();
     }
 
 }

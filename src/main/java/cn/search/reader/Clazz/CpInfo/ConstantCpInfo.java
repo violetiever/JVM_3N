@@ -1,5 +1,6 @@
 package cn.search.reader.Clazz.CpInfo;
 
+import cn.search.reader.Clazz.Clazz;
 import cn.search.reader.Usinged.U1;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -36,17 +37,21 @@ public class ConstantCpInfo {
 
     private U1 tag;
 
+    private Clazz thisClazz;
+
+    protected Object invokeObject;
+
     public ConstantCpInfo() {
 
     }
 
 
-    public static ConstantCpInfo getCpInfoByTag(DataInputStream dataInput, ConstantCpInfo[] constantPool) {
+    public static ConstantCpInfo getCpInfoByTag(DataInputStream dataInput, ConstantCpInfo[] constantPool, Clazz thisClazz) {
         U1 tag = new U1(dataInput);
         try {
             Class<?> cpSonClass = CP_INFO_MAP.get(tag.getValue());
             Constructor<?> constructor = cpSonClass.getConstructor(DataInputStream.class);
-            return ((ConstantCpInfo) constructor.newInstance(dataInput)).setTag(tag);
+            return ((ConstantCpInfo) constructor.newInstance(dataInput)).setTag(tag).setThisClazz(thisClazz);
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
             log.error("CpInfo has no constructor tag is {}", tag.getValue());
@@ -56,14 +61,34 @@ public class ConstantCpInfo {
         return null;
     }
 
-    public void initConstant(ConstantCpInfo[] constantPool){
+    public void initConstant(ConstantCpInfo[] constantPool) {
 
     }
 
     /**
      * 链接，将符号引用转换为直接引用
      */
-    public void link(){
+    public void link() {
+
+    }
+
+    // 验证
+    public void verify() {
+
+    }
+
+    // 准备
+    public void prepare() {
+
+    }
+
+    // 解析
+    public void resolve() {
+
+    }
+
+    // 调用，解析对象到invokeObject内
+    public void invoke() {
 
     }
 

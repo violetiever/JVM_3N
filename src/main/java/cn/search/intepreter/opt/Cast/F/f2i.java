@@ -13,6 +13,7 @@ public class f2i implements Opcode {
         float value = (float) frame.getOperandStack().pop();
         int result = (int) value;
         frame.getOperandStack().push(result);
+        frame.getNextCode();
     }
 
 }

@@ -14,6 +14,7 @@ public class fadd implements Opcode {
         float value1 = (float) frame.getOperandStack().pop();
         float result = value1 + value2;
         frame.getOperandStack().push(result);
+        frame.getNextCode();
     }
 
 }

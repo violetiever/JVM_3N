@@ -13,6 +13,7 @@ public class i2l implements Opcode {
         int value = (int) frame.getOperandStack().pop();
         long result = value;
         frame.getOperandStack().push(result);
+        frame.getNextCode();
     }
 
 }

@@ -24,7 +24,7 @@ public class dup_x2 implements Opcode {
         if (dup.isType1(value2))
             valueList.add(frame.getOperandStack().pop());
         dup.dupPush(frame, xValueList, valueList);
-
+        frame.getNextCode();
     }
 
 }

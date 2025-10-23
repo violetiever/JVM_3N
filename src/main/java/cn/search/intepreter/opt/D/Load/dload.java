@@ -10,12 +10,14 @@ public class dload implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-        int index = frame.getNextCode().getValue();
+        int index = frame.getNextCode();
         dloadBasic(frame, index);
+        frame.getNextCode();
     }
 
+    // 本地变量表存储的double转换成longBits存储
     public static void dloadBasic(Frame frame, int index) {
-        double value = frame.getLocalVariable()[index].doubleValue();
+        double value = Double.longBitsToDouble(frame.getLocalVariable()[index]);
         frame.getOperandStack().push(value);
     }
 

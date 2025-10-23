@@ -13,6 +13,7 @@ public class d2l implements Opcode {
         double value = (double) frame.getOperandStack().pop();
         long result = (long) value;
         frame.getOperandStack().push(result);
+        frame.getNextCode();
     }
 
 }

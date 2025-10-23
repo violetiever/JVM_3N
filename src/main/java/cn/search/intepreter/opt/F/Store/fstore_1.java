@@ -11,6 +11,7 @@ public class fstore_1 implements Opcode {
     @Override
     public void opt(Frame frame) {
         fstore.fstoreBasic(frame, 1);
+        frame.getNextCode();
     }
 
 }

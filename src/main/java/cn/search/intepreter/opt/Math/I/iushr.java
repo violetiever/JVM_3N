@@ -17,6 +17,7 @@ public class iushr implements Opcode {
         if (value1 < 0)
             result = result + (2 << ~s);
         frame.getOperandStack().push(result);
+        frame.getNextCode();
     }
 
 }

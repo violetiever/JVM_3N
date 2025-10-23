@@ -8,6 +8,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.DataInputStream;
+import java.lang.invoke.MethodType;
+import java.util.Objects;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -23,6 +25,15 @@ public class ConstantMethodTypeInfo extends ConstantCpInfo {
 
     public ConstantMethodTypeInfo(DataInputStream dataInput) {
 
+    }
+
+    // invokeObject的类型是MethodType
+    @Override
+    public void invoke() {
+        if (Objects.isNull(this.invokeObject)) {
+            MethodType methodType = MethodType.fromMethodDescriptorString(this.descriptor.getUtf8Info(), null);
+            this.invokeObject = methodType;
+        }
     }
 
 }

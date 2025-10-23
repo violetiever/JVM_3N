@@ -14,6 +14,7 @@ public class lxor implements Opcode {
         long value1 = (long) frame.getOperandStack().pop();
         long result = value1 ^ value2;
         frame.getOperandStack().push(result);
+        frame.getNextCode();
     }
 
 }

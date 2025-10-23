@@ -13,6 +13,7 @@ public class i2b implements Opcode {
         int value = (int) frame.getOperandStack().pop();
         int result = (byte) value;
         frame.getOperandStack().push(result);
+        frame.getNextCode();
     }
 
 }

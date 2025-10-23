@@ -17,13 +17,15 @@ public class if_icmpeq implements Opcode {
     }
 
     public static void ifIcmpBasic(Frame frame, BiPredicate<Integer, Integer> biPredicate) {
-        int pc = frame.getPc();
+        int oriPc = frame.getPc();
         int value2 = (int) frame.getOperandStack().pop();
         int value1 = (int) frame.getOperandStack().pop();
-        int branchbyte1 = frame.getNextCode().getValue();
-        int branchbyte2 = frame.getNextCode().getValue();
+        byte branchByte1 = frame.getNextByteCode();
+        byte branchByte2 = frame.getNextByteCode();
         if (biPredicate.test(value1, value2))
-            frame.setPc(pc + ((branchbyte1 << 8) | branchbyte2));
+            frame.setPc(oriPc + ((branchByte1 << 8) | branchByte2));
+        else
+            frame.getNextCode();
     }
 
 }

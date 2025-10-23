@@ -10,11 +10,12 @@ public class iinc implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-        int index =  frame.getNextCode().getValue();
-        int _const =  frame.getNextCode().getValue();
+        int index =  frame.getNextCode();
+        int _const =  frame.getNextCode();
         int value = frame.getLocalVariable()[index].intValue();
         int result = value + _const;
         frame.getLocalVariable()[index] = (long) result;
+        frame.getNextCode();
     }
 
 }

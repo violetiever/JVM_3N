@@ -9,7 +9,7 @@ public class nop implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-
+        frame.getNextCode();
     }
 
 }

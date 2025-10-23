@@ -10,7 +10,7 @@ public class ret implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-        int index = frame.getNextCode().getValue();
+        int index = frame.getNextCode();
         frame.setPc(frame.getLocalVariable()[index].intValue());
     }
 

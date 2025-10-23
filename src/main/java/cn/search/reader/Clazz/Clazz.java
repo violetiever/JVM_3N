@@ -2,13 +2,16 @@ package cn.search.reader.Clazz;
 
 
 import cn.search.reader.Clazz.AttributeInfo.AttributeInfo;
+import cn.search.reader.Clazz.AttributeInfo.CodeAttribute;
 import cn.search.reader.Clazz.CpInfo.*;
 import cn.search.reader.Clazz.FieldInfo.FieldInfo;
 import cn.search.reader.Clazz.MethodInfo.MethodInfo;
 import cn.search.reader.ClazzLoader.ClazzLoader;
+import cn.search.reader.Enum.SpecialClazzType;
 import cn.search.reader.Usinged.U2;
 import cn.search.reader.Usinged.U4;
 import cn.search.reader.Utils.DescriptorUtil;
+import cn.search.runtime.Frame;
 import lombok.AllArgsConstructor;
 
 import java.io.DataInputStream;
@@ -23,9 +26,6 @@ public class Clazz {
 
     static {
         ACCESS_FLAGS_MAP.put(0x0001, "ACC_PUBLIC");
-        ACCESS_FLAGS_MAP.put(0x0002, "ACC_PRIVATE");
-        ACCESS_FLAGS_MAP.put(0x0004, "ACC_PROTECTED");
-        ACCESS_FLAGS_MAP.put(0x0008, "ACC_STATIC");
         ACCESS_FLAGS_MAP.put(0x0010, "ACC_FINAL");
         ACCESS_FLAGS_MAP.put(0x0020, "ACC_SUPER");
         ACCESS_FLAGS_MAP.put(0x0200, "ACC_INTERFACE");
@@ -33,7 +33,6 @@ public class Clazz {
         ACCESS_FLAGS_MAP.put(0x1000, "ACC_SYNTHETIC");
         ACCESS_FLAGS_MAP.put(0x2000, "ACC_ANNOTATION");
         ACCESS_FLAGS_MAP.put(0x4000, "ACC_ENUM");
-        ACCESS_FLAGS_MAP.put(0x8000, "ACC_MANDATED");
     }
 
 
@@ -122,6 +121,8 @@ public class Clazz {
     // length = attributeCount
     private AttributeInfo[] attributes;
 
+    private boolean isInitialized = false;
+
     public Clazz(DataInputStream dataInput) throws Exception {
         this.magic = new U4(dataInput);
         this.minorVersion = new U2(dataInput);
@@ -131,7 +132,7 @@ public class Clazz {
         int constantPoolLen = this.constantPoolCount.getValue() - 1;
         this.constantPool = new ConstantCpInfo[constantPoolLen];
         for (int i = 0; i < constantPoolLen; i++) {
-            this.constantPool[i] = ConstantCpInfo.getCpInfoByTag(dataInput, constantPool);
+            this.constantPool[i] = ConstantCpInfo.getCpInfoByTag(dataInput, constantPool, this);
             // 如果是8字节常量则占用两个表元素空间
             if (this.constantPool[i] instanceof ConstantLongInfo || this.constantPool[i] instanceof ConstantDoubleInfo) {
                 i++;
@@ -167,13 +168,13 @@ public class Clazz {
         this.fieldsCount = new U2(dataInput);
         this.fields = new FieldInfo[this.fieldsCount.getValue()];
         for (int i = 0; i < this.fields.length; i++) {
-            this.fields[i] = new FieldInfo(dataInput, this.constantPool);
+            this.fields[i] = new FieldInfo(dataInput, this.constantPool, this);
         }
 
         this.methodsCount = new U2(dataInput);
         this.methods = new MethodInfo[this.methodsCount.getValue()];
         for (int i = 0; i < this.methods.length; i++) {
-            this.methods[i] = new MethodInfo(dataInput, this.constantPool);
+            this.methods[i] = new MethodInfo(dataInput, this.constantPool, this);
         }
 
         this.attributeCount = new U2(dataInput);
@@ -200,6 +201,152 @@ public class Clazz {
     public boolean isArray() {
         return this.getName().startsWith(Array.getDescriptor());
     }
+
+    public boolean isPrimitive() {
+        return SpecialClazzType.DESCRIPTOR_MAP.containsValue(this.getName());
+    }
+
+    public boolean isInterface() {
+        return Arrays.asList(this.getAccessFlagsName()).contains(ACCESS_FLAGS_MAP.get(0x0200));
+    }
+
+    public boolean inInstanceOf(Clazz clazzInfo) {
+        if (this.isInterface())
+            return this.isImplOf(clazzInfo);
+        else if (this.isArray())
+            return this.isSonArrayOf(clazzInfo);
+        else
+            return this.isSonClazzOf(clazzInfo);
+    }
+
+    // 是clazz的子类
+    public boolean isSonClazzOf(Clazz clazz) {
+        Clazz superClazz = this;
+        while (Objects.nonNull(superClazz)) {
+            if (superClazz.equals(clazz))
+                return true;
+            superClazz.getSuperClassInfo().resolve();
+            superClazz = superClazz.getSuperClassInfo().getClazzInfo();
+        }
+        return false;
+    }
+
+    // 是clazz的实现类
+    public boolean isImplOf(Clazz clazz) {
+        Clazz superClazz = this;
+        while (Objects.nonNull(superClazz)) {
+            if (superClazz.equals(clazz)) return true;
+            for (ConstantClassInfo interfaceClass : superClazz.interfacesInfo) {
+                interfaceClass.resolve();
+                if (interfaceClass.getClazzInfo().equals(clazz))
+                    return true;
+            }
+            superClazz.getSuperClassInfo().resolve();
+            superClazz = superClazz.getSuperClassInfo().getClazzInfo();
+        }
+        return false;
+    }
+
+    // 是clazz的子类数组
+    public boolean isSonArrayOf(Clazz clazz) {
+        if (clazz.isInterface())
+            return this.isImplOf(clazz);
+        else if (clazz.isArray()) {
+            Clazz TC = clazz.getComponentType();
+            Clazz SC = this.getComponentType();
+            return SC.isSonArrayOf(TC);
+        } else
+            return clazz.equals(ClazzLoader.loadClazzByLoader("java.lang.Object", this.getClazzLoader()));
+    }
+
+    // 转换成class
+    public Class transToClass() {
+        try {
+            return ClassLoader.getSystemClassLoader().loadClass(this.getName());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // 准备阶段
+    public void prepare() {
+        if (Objects.nonNull(constantPool))
+            for (ConstantCpInfo constantCpInfo : constantPool) {
+                if (Objects.nonNull(constantCpInfo))
+                    constantCpInfo.prepare();
+            }
+        if (Objects.nonNull(fields))
+            for (FieldInfo field : fields) {
+                if (Objects.nonNull(field))
+                    field.prepare();
+            }
+    }
+
+    // 解析阶段
+    public void resolve() {
+        if (Objects.nonNull(constantPool))
+            for (ConstantCpInfo constantCpInfo : constantPool) {
+                if (Objects.nonNull(constantCpInfo))
+                    constantCpInfo.resolve();
+            }
+        if (Objects.nonNull(fields))
+            for (FieldInfo field : fields) {
+                if (Objects.nonNull(field))
+                    field.resolve();
+            }
+    }
+
+    // 执行类的初始化函数
+    public void initialize(Frame frame) {
+        synchronized (this) {
+            if (!this.isInitialized()) {
+                this.setInitialized(true);
+                MethodInfo method = this.getMethodByNameAndDescriptor("<clinit>", "()V");
+                CodeAttribute codeAttribute = method.getCodeAttribute();
+                Frame newFrame = new Frame(frame,
+                        new Long[codeAttribute.getMaxLocals().getValue()],
+                        new Stack<>(),
+                        this.getConstantPool(),
+                        method,
+                        codeAttribute.getCode(),
+                        this);
+                newFrame.execute();
+                this.setInitialized(true);
+            }
+        }
+    }
+
+    public FieldInfo getFieldByNameAndDescriptor(String fieldName, String descriptor) {
+        for (FieldInfo field : this.getFields())
+            if (fieldName.equals(field.getName().getUtf8Info()) && descriptor.equals(field.getDescriptor().getUtf8Info()))
+                return field;
+        return null;
+    }
+
+    public MethodInfo getMethodByNameAndDescriptor(String methodName, String descriptor) {
+        if (Objects.nonNull(this.getMethods()))
+            for (MethodInfo method : this.getMethods())
+                if (methodName.equals(method.getName().getUtf8Info()) && descriptor.equals(method.getDescriptor().getUtf8Info()))
+                    return method;
+        return null;
+    }
+
+    public MethodInfo[] getMethodByName(String methodName) {
+        List<MethodInfo> methodInfoList = new ArrayList<>();
+        for (MethodInfo method : this.getMethods())
+            if (methodName.equals(method.getName().getUtf8Info()))
+                methodInfoList.add(method);
+        return methodInfoList.toArray(methodInfoList.toArray(new MethodInfo[0]));
+    }
+
+    public AttributeInfo getAttributeByClass(Class clazz) {
+        for (AttributeInfo attribute : this.getAttributes())
+            if (attribute.getClass() == clazz)
+                return attribute;
+        return null;
+    }
+
 
     public ConstantClassInfo getSuperClassInfo() {
         return superClassInfo;
@@ -361,6 +508,14 @@ public class Clazz {
         this.attributes = attributes;
     }
 
+    public boolean isInitialized() {
+        return isInitialized;
+    }
+
+    public void setInitialized(boolean initialized) {
+        isInitialized = initialized;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -370,44 +525,28 @@ public class Clazz {
     }
 
     @Override
-    public int hashCode() {
-        int result = Objects.hash(clazzLoader, magic, minorVersion, majorVersion, constantPoolCount, accessFlags, thisClass, thisClassInfo, superClass, superClassInfo, interfacesCount, fieldsCount, methodsCount, attributeCount);
-        result = 31 * result + Arrays.hashCode(constantPool);
-        result = 31 * result + Arrays.hashCode(accessFlagsName);
-        result = 31 * result + Arrays.hashCode(interfaces);
-        result = 31 * result + Arrays.hashCode(interfacesInfo);
-        result = 31 * result + Arrays.hashCode(fields);
-        result = 31 * result + Arrays.hashCode(methods);
-        result = 31 * result + Arrays.hashCode(attributes);
-        return result;
-    }
-
-    @Override
     public String toString() {
         return "Clazz{" +
-                "clazzLoader=" + clazzLoader +
-                ", magic=" + magic +
-                ", minorVersion=" + minorVersion +
-                ", majorVersion=" + majorVersion +
-                ", constantPoolCount=" + constantPoolCount +
+                "name= " + this.getName() +
+                '}';
+    }
+
+    public String getDetail() {
+        return "Clazz{" +
+                "name= " + this.getName() +
+                ", clazzLoader=" + (Objects.isNull(clazzLoader) ? "null" : clazzLoader.getClass().getName()) +
+                ", magic=" + (Objects.isNull(magic) ? "null" : magic.getValue()) +
+                ", minorVersion=" + (Objects.isNull(minorVersion) ? "null" : minorVersion.getValue()) +
+                ", majorVersion=" + (Objects.isNull(majorVersion) ? "null" : majorVersion.getValue()) +
                 ", constantPool=" + Arrays.toString(constantPool) +
-                ", accessFlags=" + accessFlags +
                 ", accessFlagsName=" + Arrays.toString(accessFlagsName) +
-                ", thisClass=" + thisClass +
-                ", thisClassInfo=" + thisClassInfo +
-                ", superClass=" + superClass +
-                ", superClassInfo=" + superClassInfo +
-                ", interfacesCount=" + interfacesCount +
-                ", interfaces=" + Arrays.toString(interfaces) +
                 ", interfacesInfo=" + Arrays.toString(interfacesInfo) +
-                ", fieldsCount=" + fieldsCount +
                 ", fields=" + Arrays.toString(fields) +
-                ", methodsCount=" + methodsCount +
                 ", methods=" + Arrays.toString(methods) +
-                ", attributeCount=" + attributeCount +
                 ", attributes=" + Arrays.toString(attributes) +
                 '}';
     }
+
 
 }
 

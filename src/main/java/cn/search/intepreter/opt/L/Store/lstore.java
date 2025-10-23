@@ -10,8 +10,9 @@ public class lstore implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-        int index = frame.getNextCode().getValue();
+        int index = frame.getNextCode();
         lstoreBasic(frame, index);
+        frame.getNextCode();
     }
 
     public static void lstoreBasic(Frame frame, int index) {

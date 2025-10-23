@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.DataInputStream;
+import java.lang.invoke.MethodType;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -30,6 +31,18 @@ public class ConstantNameAndTypeInfo extends ConstantCpInfo {
 
     public ConstantNameAndTypeInfo(DataInputStream dataInput) {
 
+    }
+
+    @Override
+    public String toString() {
+        return "ConstantNameAndTypeInfo{" + "\n" +
+                "name=" + name + "\n" +
+                ", descriptor=" + descriptor + "\n" +
+                '}';
+    }
+
+    public MethodType getMethodType(){
+        return MethodType.fromMethodDescriptorString(this.descriptor.getUtf8Info(), null);
     }
 
 }

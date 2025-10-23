@@ -11,6 +11,7 @@ public class fconst_0 implements Opcode {
     @Override
     public void opt(Frame frame) {
         frame.getOperandStack().push(0F);
+        frame.getNextCode();
     }
 
 }

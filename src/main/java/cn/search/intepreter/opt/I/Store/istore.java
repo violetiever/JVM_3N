@@ -1,7 +1,6 @@
 package cn.search.intepreter.opt.I.Store;
 
 import cn.search.intepreter.opt.Opcode;
-import cn.search.reader.Usinged.U1;
 import cn.search.runtime.Frame;
 
 /**
@@ -11,8 +10,9 @@ public class istore implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-        int index = frame.getNextCode().getValue();
+        int index = frame.getNextCode();
         istoreBasic(frame, index);
+        frame.getNextCode();
     }
 
     public static void istoreBasic(Frame frame, int index) {

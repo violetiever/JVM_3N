@@ -13,6 +13,7 @@ public class i2d implements Opcode {
         int value = (int) frame.getOperandStack().pop();
         double result = value;
         frame.getOperandStack().push(result);
+        frame.getNextCode();
     }
 
 }

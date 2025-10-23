@@ -11,6 +11,7 @@ public class lstore_0 implements Opcode {
     @Override
     public void opt(Frame frame) {
         lstore.lstoreBasic(frame, 0);
+        frame.getNextCode();
     }
 
 }

@@ -12,6 +12,7 @@ public class fneg implements Opcode {
     public void opt(Frame frame) {
         float value = (float) frame.getOperandStack().pop();
         frame.getOperandStack().push(-value);
+        frame.getNextCode();
     }
 
 }

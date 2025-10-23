@@ -66,6 +66,20 @@ public abstract class ClazzLoader {
         }
     }
 
+    // JVM内部使用，可以加载数组或普通类
+    public static Clazz loadClazzByLoader(String clazzName, ClazzLoader clazzLoader) {
+        // 尝试使用传入的clazzLoader加载类，如果加载失败则尝试使用AppClazzLoader加载
+        Clazz clazz;
+        if(clazzName.startsWith(SpecialClazzType.Array.getDescriptor())){
+            clazz = ClazzLoader.loadArrayClazz(clazzName);
+        }else {
+            clazz = clazzLoader.loadClazz(clazzName);
+            if (Objects.isNull(clazz))
+                clazz = AppClazzLoader.getInstance().loadClazz(clazzName);
+        }
+        return clazz;
+    }
+
     protected final Clazz defineClazz(String name) {
         InputStream classFileInputStream = this.lazyClazzMap.get(name);
         if (classFileInputStream != null && !MethodArea.CLAZZ_MAP.containsKey(name)) {
@@ -84,6 +98,8 @@ public abstract class ClazzLoader {
                     Integer index = Heap.putIntoObjectPool(entryClazz);
                     MethodArea.CLAZZ_MAP.put(name, index);
                     this.loadedClazzMap.put(name, index);
+                    // 加载完成后触发准备阶段
+                    entryClazz.prepare();
                     return entryClazz;
                 }
             }

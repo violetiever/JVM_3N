@@ -11,6 +11,7 @@ public class istore_1 implements Opcode {
     @Override
     public void opt(Frame frame) {
         istore.istoreBasic(frame, 1);
+        frame.getNextCode();
     }
 
 }

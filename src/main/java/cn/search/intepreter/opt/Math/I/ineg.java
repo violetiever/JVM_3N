@@ -12,6 +12,7 @@ public class ineg implements Opcode {
     public void opt(Frame frame) {
         int value = (int) frame.getOperandStack().pop();
         frame.getOperandStack().push(-value);
+        frame.getNextCode();
     }
 
 }

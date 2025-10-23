@@ -15,6 +15,7 @@ public class lshr implements Opcode {
         int s = value2 & 0b111111;
         long result = value1 >> s;
         frame.getOperandStack().push(result);
+        frame.getNextCode();
     }
 
 }

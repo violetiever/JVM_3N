@@ -17,6 +17,7 @@ public class lushr implements Opcode {
         if (value1 < 0)
             result = result + (2L << ~s);
         frame.getOperandStack().push(result);
+        frame.getNextCode();
     }
 
 }

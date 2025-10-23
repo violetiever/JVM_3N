@@ -2,7 +2,6 @@ package cn.search.reader.Usinged;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.DataInputStream;
@@ -28,5 +27,9 @@ public class U2 extends U {
         this.value = value;
     }
 
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
 
 }

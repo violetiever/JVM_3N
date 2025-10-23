@@ -4,6 +4,6 @@ import cn.search.runtime.Frame;
 
 public interface Opcode {
 
-    void opt(Frame frame);
+    void opt(Frame frame) throws Exception;
 
 }

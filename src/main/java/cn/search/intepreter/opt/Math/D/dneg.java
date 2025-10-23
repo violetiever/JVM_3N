@@ -12,6 +12,7 @@ public class dneg implements Opcode {
     public void opt(Frame frame) {
         double value = (double) frame.getOperandStack().pop();
         frame.getOperandStack().push(-value);
+        frame.getNextCode();
     }
 
 }

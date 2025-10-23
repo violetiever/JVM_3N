@@ -41,6 +41,9 @@ public class ConstantUtf8Info extends ConstantCpInfo {
 
     }
 
-
+    @Override
+    public String toString() {
+        return "\"" + utf8Info + "\"";
+    }
 
 }

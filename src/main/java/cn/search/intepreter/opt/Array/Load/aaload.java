@@ -12,10 +12,10 @@ public class aaload implements Opcode {
     @Override
     public void opt(Frame frame) {
         int index = (int) frame.getOperandStack().pop();
-        int arrayRef = (int) frame.getOperandStack().pop();
-        int[] array = (int[]) Heap.getObjectFromPool(arrayRef);
+        int[] array = (int[]) frame.getOperandStack().pop();
         int value = array[index];
-        frame.getOperandStack().push(value);
+        frame.getOperandStack().push(Heap.getObjectFromPool(value));
+        frame.getNextCode();
     }
 
 }

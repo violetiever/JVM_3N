@@ -10,6 +10,7 @@ public class _return implements Opcode {
 
     @Override
     public void opt(Frame frame) {
+        frame.setPc(frame.getPc() + 1);
         frame = frame.getPreFrame();
     }
 

@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.DataInputStream;
+import java.util.Objects;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -25,7 +26,13 @@ public class ConstantLongInfo extends ConstantCpInfo {
     private Long longValue;
 
     public ConstantLongInfo(DataInputStream dataInput) {
-        longValue =  ((long) highBytes.getValue() << 32) + lowBytes.getValue();
+        longValue = ((long) highBytes.getValue() << 32) + lowBytes.getValue();
+    }
+
+    @Override
+    public void invoke() {
+        if (Objects.isNull(this.invokeObject))
+            this.invokeObject = this.longValue;
     }
 
 }

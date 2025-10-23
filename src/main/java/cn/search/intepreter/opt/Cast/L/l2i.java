@@ -13,6 +13,7 @@ public class l2i implements Opcode {
         long value = (long) frame.getOperandStack().pop();
         int result = (int) value;
         frame.getOperandStack().push(result);
+        frame.getNextCode();
     }
 
 }

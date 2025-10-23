@@ -11,6 +11,7 @@ public class ireturn implements Opcode {
     @Override
     public void opt(Frame frame) {
         int value = (int) frame.getOperandStack().pop();
+        frame.setPc(frame.getPc() + 1);
         frame = frame.getPreFrame();
         frame.getOperandStack().push(value);
     }

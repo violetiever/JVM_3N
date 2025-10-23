@@ -29,10 +29,10 @@ public class tableswitch implements Opcode {
     }
 
     protected static int getNext4CodeTo32BitSignedNum(Frame frame) {
-        return (frame.getNextCode().getValue() << 24) |
-                (frame.getNextCode().getValue() << 16) |
-                (frame.getNextCode().getValue() << 8) |
-                frame.getNextCode().getValue();
+        return (frame.getNextCode() << 24) |
+                (frame.getNextCode() << 16) |
+                (frame.getNextCode() << 8) |
+                frame.getNextCode();
     }
 
 }

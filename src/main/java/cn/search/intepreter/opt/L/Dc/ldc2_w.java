@@ -13,7 +13,7 @@ public class ldc2_w implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-        int index = (frame.getNextCode().getValue() << 8) | (frame.getNextCode().getValue());
+        int index = ((frame.getNextCode() << 8) | (frame.getNextCode())) - 1;
         ConstantCpInfo constantCpInfo = frame.getRuntimeConstantPool()[index];
         Object value = null;
         if (constantCpInfo instanceof ConstantLongInfo) {
@@ -22,6 +22,7 @@ public class ldc2_w implements Opcode {
             value = ((ConstantDoubleInfo) constantCpInfo).getDoubleValue();
         }
         frame.getOperandStack().push(value);
+        frame.getNextCode();
     }
 
 }

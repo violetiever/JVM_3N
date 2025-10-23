@@ -21,6 +21,7 @@ public class dup_x1 implements Opcode {
         valueList.add(value2);
         xValueList.add(value1);
         dup.dupPush(frame, xValueList, valueList);
+        frame.getNextCode();
     }
 
 }

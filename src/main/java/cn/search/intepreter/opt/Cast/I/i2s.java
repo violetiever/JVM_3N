@@ -13,6 +13,7 @@ public class i2s implements Opcode {
         int value = (int) frame.getOperandStack().pop();
         int result = (short) value;
         frame.getOperandStack().push(result);
+        frame.getNextCode();
     }
 
 }

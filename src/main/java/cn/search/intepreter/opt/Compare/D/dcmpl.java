@@ -11,6 +11,7 @@ public class dcmpl implements Opcode {
     @Override
     public void opt(Frame frame) {
         dcmpBasic(frame, -1);
+        frame.getNextCode();
     }
 
     public static void dcmpBasic(Frame frame, int nanResult) {

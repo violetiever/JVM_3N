@@ -11,6 +11,7 @@ public class iconst_2 implements Opcode {
     @Override
     public void opt(Frame frame) {
         frame.getOperandStack().push(2);
+        frame.getNextCode();
     }
 
 }

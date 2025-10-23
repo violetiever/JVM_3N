@@ -13,6 +13,7 @@ public class i2f implements Opcode {
         int value = (int) frame.getOperandStack().pop();
         float result = value;
         frame.getOperandStack().push(result);
+        frame.getNextCode();
     }
 
 }

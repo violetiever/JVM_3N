@@ -24,6 +24,9 @@ public class U1 extends U {
         }
     }
 
-
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
 
 }

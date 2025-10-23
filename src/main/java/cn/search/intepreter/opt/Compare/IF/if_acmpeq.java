@@ -20,8 +20,8 @@ public class if_acmpeq implements Opcode {
         int pc = frame.getPc();
         int value2 = (int) frame.getOperandStack().pop();
         int value1 = (int) frame.getOperandStack().pop();
-        int branchbyte1 = frame.getNextCode().getValue();
-        int branchbyte2 = frame.getNextCode().getValue();
+        int branchbyte1 = frame.getNextCode();
+        int branchbyte2 = frame.getNextCode();
         if (biPredicate.test(value1, value2))
             frame.setPc(pc + ((branchbyte1 << 8) | branchbyte2));
 

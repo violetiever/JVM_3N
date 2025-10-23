@@ -12,6 +12,7 @@ public class lneg implements Opcode {
     public void opt(Frame frame) {
         long value = (long) frame.getOperandStack().pop();
         frame.getOperandStack().push(-value);
+        frame.getNextCode();
     }
 
 }

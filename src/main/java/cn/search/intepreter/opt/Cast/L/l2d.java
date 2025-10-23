@@ -13,6 +13,7 @@ public class l2d implements Opcode {
         long value = (long) frame.getOperandStack().pop();
         double result = value;
         frame.getOperandStack().push(result);
+        frame.getNextCode();
     }
 
 }

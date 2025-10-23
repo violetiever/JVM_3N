@@ -19,8 +19,8 @@ public class ifeq implements Opcode {
     public static void ifBasic(Frame frame, Predicate<Integer> predicate) {
         int pc = frame.getPc();
         int value = (int) frame.getOperandStack().pop();
-        int branchbyte1 = frame.getNextCode().getValue();
-        int branchbyte2 = frame.getNextCode().getValue();
+        int branchbyte1 = frame.getNextCode();
+        int branchbyte2 = frame.getNextCode();
         if (predicate.test(value))
             frame.setPc(pc + ((branchbyte1 << 8) | branchbyte2));
     }
