@@ -13,7 +13,7 @@ public class iinc implements Opcode {
         int index =  frame.getNextCode();
         int _const =  frame.getNextCode();
         int value = frame.getLocalVariable()[index].intValue();
-        int result = value + _const;
+        int result = value + (byte) _const;
         frame.getLocalVariable()[index] = (long) result;
         frame.getNextCode();
     }

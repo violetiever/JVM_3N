@@ -35,23 +35,31 @@ public class ConstantInterfaceMethodRefInfo extends ConstantRefInfo {
         DescriptorUtil.getMethodParameterClazzArrayByMethodDescriptor(descriptor, this.getThisClazz().getClazzLoader());
 
         this.methodInfo = clazz.getMethodByNameAndDescriptor(methodName, descriptor);
+        while (Objects.nonNull(clazz)) {
+            if (Objects.nonNull(this.methodInfo)) {
+                clazz.resolve();
+                return;
+            }
+//        Clazz objectClazz = ClazzLoader.loadClazzByLoader("java.lang.Object", this.getThisClazz().getClazzLoader());
+//        this.methodInfo = objectClazz.getMethodByNameAndDescriptor(methodName, descriptor);
 
-        if (Objects.nonNull(this.methodInfo)) {
-            clazz.resolve();
-            return;
+//        if (Objects.nonNull(this.methodInfo)) {
+//            clazz.resolve();
+//            return;
+//        }
+
+            // 查找类实现的接口，因为接口可以继承多个接口，需要进行递归查找
+            this.methodInfo = getInterfaceMethodRecursion(clazz.getInterfacesInfo(), methodName, descriptor);
+            if (Objects.nonNull(this.methodInfo))
+                this.methodInfo.getThisClazz().resolve();
+
+            if (Objects.nonNull(clazz.getSuperClassInfo())) {
+                String superClazzName = clazz.getSuperClassInfo().getName().getUtf8Info();
+                // 获取当前类的父类循环寻找字段
+                clazz = ClazzLoader.loadClazzByLoader(superClazzName, this.getThisClazz().getClazzLoader());
+            } else
+                break;
         }
-        Clazz objectClazz = ClazzLoader.loadClazzByLoader("java.lang.Object", this.getThisClazz().getClazzLoader());
-        this.methodInfo = objectClazz.getMethodByNameAndDescriptor(methodName, descriptor);
-
-        if (Objects.nonNull(this.methodInfo)) {
-            clazz.resolve();
-            return;
-        }
-
-        // 查找类实现的接口，因为接口可以继承多个接口，需要进行递归查找
-        this.methodInfo = getInterfaceMethodRecursion(clazz.getInterfacesInfo(), methodName, descriptor);
-        if (Objects.nonNull(this.methodInfo))
-            this.methodInfo.getThisClazz().resolve();
     }
 
 }

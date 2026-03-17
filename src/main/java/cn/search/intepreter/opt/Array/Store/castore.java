@@ -10,10 +10,10 @@ public class castore implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-        char value = (char) frame.getOperandStack().pop();
+        int intValue = (int) frame.getOperandStack().pop();
         int index = (int) frame.getOperandStack().pop();
         char[] array = (char[]) frame.getOperandStack().pop();
-        array[index] = value;
+        array[index] = (char) intValue;
         frame.getNextCode();
     }
 

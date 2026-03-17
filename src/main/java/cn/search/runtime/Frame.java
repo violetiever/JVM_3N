@@ -12,7 +12,9 @@ import cn.search.reader.Usinged.U1;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Arrays;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
 /**
  * 栈帧
@@ -89,15 +91,8 @@ public class Frame {
     // 新增执行方法，每个指令执行完毕后需指向下一个待执行的指令码
     public void execute() {
         while (this.pc <= this.code.length - 1) {
+            this.printFrameInfo();
             Opcode opcode = OpcodeMap.OPCODE.get(this.code[pc].getValue());
-            String name = opcode.getClass().getName();
-            log.debug("开始执行方法 className = {} methodName = {} pc = {}  opcode = {} localVar = {} stack = {}",
-                    this.currentClazz.getName(),
-                    this.currentMethod.getName().getUtf8Info(),
-                    this.pc,
-                    name.substring(name.lastIndexOf(".") + 1),
-                    this.localVariable,
-                    this.operandStack);
             try {
                 opcode.opt(this);
             } catch (Exception e) {
@@ -119,6 +114,36 @@ public class Frame {
                 + ((SourceFileAttribute) this.currentClazz.getAttributeByClass(SourceFileAttribute.class)).getSourceFile().getUtf8Info()
                 + ":" + lineNumber + ")");
         this.preFrame.printFrameStack();
+    }
+
+    public void printFrameInfo() {
+        Opcode opcode = OpcodeMap.OPCODE.get(this.code[pc].getValue());
+        String name = opcode.getClass().getName();
+        log.debug("开始执行方法 className = {} methodName = {} pc = {}  opcode = {} localVar = {} stack = {}",
+                this.currentClazz.getName(),
+                this.currentMethod.getName().getUtf8Info(),
+                this.pc,
+                name.substring(name.lastIndexOf(".") + 1),
+                this.localVariable,
+                this.operandStack.stream()
+                        .map(element -> {
+                            if (element instanceof Object[]) {
+                                return Arrays.deepToString((Object[]) element);
+                            } else if (element instanceof int[]) {
+                                return Arrays.toString((int[]) element);
+                            } else if (element instanceof long[]) {
+                                return Arrays.toString((long[]) element);
+                            } else if (element instanceof double[]) {
+                                return Arrays.toString((double[]) element);
+                            } else if (element instanceof char[]) {
+                                return Arrays.toString((char[]) element);
+                            }
+                            // 可以根据需要添加更多基本类型数组的判断
+                            else {
+                                return String.valueOf(element);
+                            }
+                        })
+                        .collect(Collectors.joining(", ", "[", "]")));
     }
 
 }

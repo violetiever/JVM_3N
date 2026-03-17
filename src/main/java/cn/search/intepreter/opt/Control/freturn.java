@@ -11,7 +11,7 @@ public class freturn implements Opcode {
     @Override
     public void opt(Frame frame) {
         float value = (float) frame.getOperandStack().pop();
-        frame.setPc(frame.getPc() + 1);
+        frame.setPc(frame.getCode().length);
         frame = frame.getPreFrame();
         frame.getOperandStack().push(value);
     }

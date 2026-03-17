@@ -4,6 +4,7 @@ import cn.search.intepreter.opt.Opcode;
 import cn.search.reader.Clazz.Clazz;
 import cn.search.reader.Clazz.CpInfo.ConstantInterfaceMethodRefInfo;
 import cn.search.reader.Clazz.MethodInfo.MethodInfo;
+import cn.search.reader.Utils.CommonUtil;
 import cn.search.reader.Utils.DescriptorUtil;
 import cn.search.runtime.Frame;
 
@@ -18,7 +19,7 @@ public class invokeinterface implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-        int index = ((frame.getNextCode() << 8) | (frame.getNextCode())) - 1;
+        int index = CommonUtil.parseIndexByte(frame.getNextCode(), frame.getNextCode());
         ConstantInterfaceMethodRefInfo constantInterfaceMethodRefInfo = (ConstantInterfaceMethodRefInfo) frame.getRuntimeConstantPool()[index];
         constantInterfaceMethodRefInfo.resolve();
         MethodInfo methodInfo = constantInterfaceMethodRefInfo.getMethodInfo();

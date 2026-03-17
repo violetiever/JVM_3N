@@ -1,6 +1,7 @@
 package cn.search.intepreter.opt.Compare.I;
 
 import cn.search.intepreter.opt.Opcode;
+import cn.search.reader.Utils.CommonUtil;
 import cn.search.runtime.Frame;
 
 import java.util.function.Predicate;
@@ -19,10 +20,11 @@ public class ifeq implements Opcode {
     public static void ifBasic(Frame frame, Predicate<Integer> predicate) {
         int pc = frame.getPc();
         int value = (int) frame.getOperandStack().pop();
-        int branchbyte1 = frame.getNextCode();
-        int branchbyte2 = frame.getNextCode();
+        int branchbyte = CommonUtil.parseBranchByte(frame.getNextCode(), frame.getNextCode());
         if (predicate.test(value))
-            frame.setPc(pc + ((branchbyte1 << 8) | branchbyte2));
+            frame.setPc(pc + branchbyte);
+        else
+            frame.getNextCode();
     }
 
 }

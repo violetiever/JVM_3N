@@ -18,6 +18,7 @@ import java.io.DataInputStream;
 import java.util.*;
 
 import static cn.search.reader.Enum.SpecialClazzType.Array;
+import static cn.search.reader.Enum.SpecialClazzType.CLASS_TYPE_MAP;
 
 @AllArgsConstructor
 public class Clazz {
@@ -122,6 +123,9 @@ public class Clazz {
     private AttributeInfo[] attributes;
 
     private boolean isInitialized = false;
+
+    // 0: not resolved  1: resolving 2:resolved
+    private long resolveStatus = 0;
 
     public Clazz(DataInputStream dataInput) throws Exception {
         this.magic = new U4(dataInput);
@@ -262,6 +266,10 @@ public class Clazz {
     // 转换成class
     public Class transToClass() {
         try {
+            // 原始类型特殊处理
+            if (this.isPrimitive()) {
+                return CLASS_TYPE_MAP.get(this.getName());
+            }
             return ClassLoader.getSystemClassLoader().loadClass(this.getName());
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
@@ -285,16 +293,20 @@ public class Clazz {
 
     // 解析阶段
     public void resolve() {
-        if (Objects.nonNull(constantPool))
-            for (ConstantCpInfo constantCpInfo : constantPool) {
-                if (Objects.nonNull(constantCpInfo))
-                    constantCpInfo.resolve();
-            }
-        if (Objects.nonNull(fields))
-            for (FieldInfo field : fields) {
-                if (Objects.nonNull(field))
-                    field.resolve();
-            }
+        if (resolveStatus == 0) {
+            resolveStatus = 1;
+            if (Objects.nonNull(constantPool))
+                for (ConstantCpInfo constantCpInfo : constantPool) {
+                    if (Objects.nonNull(constantCpInfo))
+                        constantCpInfo.resolve();
+                }
+            if (Objects.nonNull(fields))
+                for (FieldInfo field : fields) {
+                    if (Objects.nonNull(field))
+                        field.resolve();
+                }
+            resolveStatus = 2;
+        }
     }
 
     // 执行类的初始化函数

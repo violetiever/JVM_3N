@@ -6,6 +6,7 @@ import cn.search.reader.Clazz.CpInfo.ConstantCpInfo;
 import cn.search.reader.Clazz.CpInfo.ConstantInterfaceMethodRefInfo;
 import cn.search.reader.Clazz.CpInfo.ConstantMethodRefInfo;
 import cn.search.reader.Clazz.MethodInfo.MethodInfo;
+import cn.search.reader.Utils.CommonUtil;
 import cn.search.reader.Utils.DescriptorUtil;
 import cn.search.runtime.Frame;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +23,7 @@ public class invokespecial implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-        int index = ((frame.getNextCode() << 8) | (frame.getNextCode())) - 1;
+        int index = CommonUtil.parseIndexByte(frame.getNextCode(), frame.getNextCode());
         ConstantCpInfo constantCpInfo = frame.getRuntimeConstantPool()[index];
         constantCpInfo.resolve();
         MethodInfo methodInfo = null;

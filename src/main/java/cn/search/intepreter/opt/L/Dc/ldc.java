@@ -18,14 +18,14 @@ public class ldc implements Opcode {
     }
 
     public static void ldcBasic(Frame frame, int index) {
-        ConstantCpInfo constantCpInfo = frame.getRuntimeConstantPool()[index];
+        ConstantCpInfo constantCpInfo = frame.getRuntimeConstantPool()[index - 1];
         Object temp = null;
         if (constantCpInfo instanceof ConstantIntegerInfo) {
-            temp = ((ConstantIntegerInfo) constantCpInfo).getIntegerValue();
+            temp = ((ConstantIntegerInfo) constantCpInfo).getIntegerValue().intValue();
         } else if (constantCpInfo instanceof ConstantFloatInfo) {
             temp = ((ConstantFloatInfo) constantCpInfo).getFloatValue();
         } else if (constantCpInfo instanceof ConstantStringInfo) {
-            temp = ((ConstantStringInfo) constantCpInfo).getIndex();
+            temp = ((ConstantStringInfo) constantCpInfo).getString().getUtf8Info();
         } else if (constantCpInfo instanceof ConstantUtf8Info) {
             temp = ((ConstantUtf8Info) constantCpInfo).getUtf8Info();
         } else if (constantCpInfo instanceof ConstantClassInfo) {

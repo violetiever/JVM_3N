@@ -3,6 +3,7 @@ package cn.search.intepreter.opt.References;
 import cn.search.intepreter.opt.Opcode;
 import cn.search.reader.Clazz.CpInfo.ConstantFieldRefInfo;
 import cn.search.reader.Clazz.FieldInfo.FieldInfo;
+import cn.search.reader.Utils.CommonUtil;
 import cn.search.runtime.Frame;
 
 /**
@@ -12,7 +13,7 @@ public class getstatic implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-        int index = ((frame.getNextCode() << 8) | (frame.getNextCode())) - 1;
+        int index = CommonUtil.parseIndexByte(frame.getNextCode(), frame.getNextCode());
         ConstantFieldRefInfo constantFieldRefInfo = (ConstantFieldRefInfo) frame.getRuntimeConstantPool()[index];
         constantFieldRefInfo.resolve();
         FieldInfo fieldInfo = constantFieldRefInfo.getFieldInfo();

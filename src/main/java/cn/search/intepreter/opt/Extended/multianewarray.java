@@ -4,6 +4,7 @@ import cn.search.intepreter.opt.Opcode;
 import cn.search.reader.Clazz.Clazz;
 import cn.search.reader.Clazz.CpInfo.ConstantClassInfo;
 import cn.search.reader.Enum.SpecialClazzType;
+import cn.search.reader.Utils.CommonUtil;
 import cn.search.runtime.Frame;
 
 import java.lang.reflect.Array;
@@ -32,7 +33,7 @@ public class multianewarray implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-        int index = ((frame.getNextCode() << 8) | (frame.getNextCode())) - 1;
+        int index = CommonUtil.parseIndexByte(frame.getNextCode(), frame.getNextCode());
         ConstantClassInfo constantClassInfo = (ConstantClassInfo) frame.getRuntimeConstantPool()[index];
         constantClassInfo.resolve();
         int dimensions = frame.getNextCode();

@@ -12,7 +12,7 @@ public class ishl implements Opcode {
     public void opt(Frame frame) {
         int value2 = (int) frame.getOperandStack().pop();
         int value1 = (int) frame.getOperandStack().pop();
-        int s = value2 & 0b11111;
+        int s = value2 & 0x1f;
         int result = value1 << s;
         frame.getOperandStack().push(result);
         frame.getNextCode();

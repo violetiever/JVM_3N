@@ -1,6 +1,7 @@
 package cn.search.intepreter.opt.Control;
 
 import cn.search.intepreter.opt.Opcode;
+import cn.search.reader.Utils.CommonUtil;
 import cn.search.runtime.Frame;
 
 /**
@@ -11,9 +12,7 @@ public class jsr implements Opcode {
     @Override
     public void opt(Frame frame) {
         int address = frame.getPc() + 1;
-        int branchbyte1 = frame.getNextCode();
-        int branchbyte2 = frame.getNextCode();
-        frame.setPc(frame.getPc() + ((branchbyte1 << 8) | branchbyte2));
+        frame.setPc(frame.getPc() + CommonUtil.parseBranchByte(frame.getNextCode(), frame.getNextCode()));
         frame.getOperandStack().push(address);
     }
 

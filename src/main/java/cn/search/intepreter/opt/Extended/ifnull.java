@@ -1,6 +1,7 @@
 package cn.search.intepreter.opt.Extended;
 
 import cn.search.intepreter.opt.Opcode;
+import cn.search.reader.Utils.CommonUtil;
 import cn.search.runtime.Frame;
 
 import java.util.Objects;
@@ -12,10 +13,11 @@ public class ifnull implements Opcode {
 
     @Override
     public void opt(Frame frame) {
-        int branchByte = ((frame.getNextCode() << 8) | (frame.getNextCode())) - 1;
+        int oriPc = frame.getPc();
+        int branchByte = CommonUtil.parseBranchByte(frame.getNextCode(), frame.getNextCode());
         Object value = frame.getOperandStack().pop();
         if (Objects.isNull(value)) {
-            frame.setPc(branchByte);
+            frame.setPc(oriPc + branchByte);
         } else
             frame.getNextCode();
     }

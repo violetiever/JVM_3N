@@ -1,6 +1,7 @@
 package cn.search.intepreter.opt.Compare.IF;
 
 import cn.search.intepreter.opt.Opcode;
+import cn.search.reader.Utils.CommonUtil;
 import cn.search.runtime.Frame;
 
 import java.util.function.BiPredicate;
@@ -20,11 +21,11 @@ public class if_acmpeq implements Opcode {
         int pc = frame.getPc();
         int value2 = (int) frame.getOperandStack().pop();
         int value1 = (int) frame.getOperandStack().pop();
-        int branchbyte1 = frame.getNextCode();
-        int branchbyte2 = frame.getNextCode();
+        int branchbyte = CommonUtil.parseBranchByte(frame.getNextCode(), frame.getNextCode());
         if (biPredicate.test(value1, value2))
-            frame.setPc(pc + ((branchbyte1 << 8) | branchbyte2));
-
+            frame.setPc(pc + branchbyte);
+        else
+            frame.getNextCode();
     }
 
 }

@@ -26,7 +26,7 @@ public class invokedynamic implements Opcode {
         ConstantInvokeDynamicInfo constantInvokeDynamicInfo = (ConstantInvokeDynamicInfo) frame.getRuntimeConstantPool()[index];
         constantInvokeDynamicInfo.resolve();
         // 如果已经获取过CallSite则直接使用
-        if (Objects.nonNull(constantInvokeDynamicInfo.getCallSite())) {
+        if (Objects.isNull(constantInvokeDynamicInfo.getCallSite())) {
             ConstantMethodHandleInfo bootstrapMethod = constantInvokeDynamicInfo.getBootstrapMethod().getBootstrapMethod();
             bootstrapMethod.invoke();
             ConstantMethodRefInfo bsm = (ConstantMethodRefInfo) bootstrapMethod.getReference();
