@@ -18,6 +18,9 @@ public class getstatic implements Opcode {
         constantFieldRefInfo.resolve();
         FieldInfo fieldInfo = constantFieldRefInfo.getFieldInfo();
         fieldInfo.getThisClazz().initialize(frame);
+        if("java.lang.System".equals(fieldInfo.getThisClazz().getName()) && "out".equals(fieldInfo.getName().getUtf8Info())){
+            fieldInfo.setFieldValue(System.out);
+        }
         frame.getOperandStack().push(fieldInfo.getFieldValue());
         frame.getNextCode();
     }

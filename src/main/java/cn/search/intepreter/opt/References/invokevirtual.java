@@ -28,6 +28,9 @@ public class invokevirtual implements Opcode {
             return;
         if (Arrays.asList(methodInfo.getAccessFlag()).contains("ACC_NATIVE")) {
             _invoke.invokeNative(methodInfo, parameterClazzArray, frame.getOperandStack(), true);
+        } else if (Arrays.asList(methodInfo.getAccessFlag()).contains("ACC_ABSTRACT")) {
+            // 新增判断abstract方法，如果是abstract方法则提前获取objectref再获取method
+            _invoke.invokeAbstract(frame,methodInfo, parameterClazzArray, frame.getOperandStack());
         } else {
             // 新增栈帧执行方法
             Frame newFrame = new Frame(frame,

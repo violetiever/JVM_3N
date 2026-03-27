@@ -2,13 +2,16 @@ package cn.search.intepreter.opt.References;
 
 import cn.search.reader.Clazz.Clazz;
 import cn.search.reader.Clazz.MethodInfo.MethodInfo;
+import cn.search.reader.ClazzLoader.ClazzLoader;
 import cn.search.reader.Enum.SpecialClazzType;
+import cn.search.runtime.Frame;
 import cn.search.runtime.Heap;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Stack;
 
@@ -37,8 +40,15 @@ public class _invoke {
     // 根据方法参数描述符和操作数栈初始化本地变量表
     public static Long[] getLocalVariableByParamClazzArray(Long[] localVariable, Clazz[] paramClazzArray, Stack<Object> stack, boolean hasObj) {
         int localSize = getLocalSizeByParamClazzArray(paramClazzArray, hasObj);
+        StackParamToLocalVariable(localVariable, stack, localSize, hasObj);
+        if (hasObj)
+            localVariable[0] = Heap.putIntoObjectPool(stack.pop()).longValue();
+        return localVariable;
+    }
+
+    // 将栈中的参数放入本地变量表中
+    private static void StackParamToLocalVariable(Long[] localVariable, Stack<Object> stack, int localSize, boolean hasObj) {
         int end = hasObj ? 1 : 0;
-        // 将栈中的参数放入本地变量表中
         for (int i = localSize - 1; i >= end; i--) {
             Object arg = stack.pop();
             if (arg instanceof Long)
@@ -55,9 +65,6 @@ public class _invoke {
             // 都转换成long类型存入本地变量表
             localVariable[i] = (long) arg;
         }
-        if (hasObj)
-            localVariable[0] = Heap.putIntoObjectPool(stack.pop()).longValue();
-        return localVariable;
     }
 
     // 根据方法参数描述符和操作数栈获取本地方法的参数
@@ -88,6 +95,25 @@ public class _invoke {
         return localSize;
     }
 
+    public static void invokeAbstract(Frame frame, MethodInfo methodInfo, Clazz[] parameterClazzArray, Stack<Object> stack) {
+        int localSize = getLocalSizeByParamClazzArray(parameterClazzArray, true);
+        Long[] localVariable = new Long[localSize];
+        StackParamToLocalVariable(localVariable, stack, localSize, true);
+        Object objectref = stack.pop();
+        localVariable[0] = Heap.putIntoObjectPool(objectref).longValue();
+        Clazz objectClazz = ClazzLoader.loadClazzByLoader(objectref.getClass().getName().replace('.','/'), methodInfo.getThisClazz().getClazzLoader());
+        objectClazz.resolve();
+        MethodInfo methodByNameAndDescriptor = objectClazz.getMethodByNameAndDescriptor(methodInfo.getName().getUtf8Info(), methodInfo.getDescriptor().getUtf8Info());
+        Long[] newLocal = Arrays.copyOf(localVariable,methodByNameAndDescriptor.getCodeAttribute().getMaxLocals().getValue());
+        Frame newFrame = new Frame(frame,
+                newLocal,
+                new Stack<>(),
+                methodByNameAndDescriptor.getThisClazz().getConstantPool(),
+                methodByNameAndDescriptor,
+                methodByNameAndDescriptor.getCodeAttribute().getCode(),
+                methodByNameAndDescriptor.getThisClazz());
+        newFrame.execute();
+    }
 }
 
 @Data

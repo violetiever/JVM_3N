@@ -3,19 +3,17 @@ package cn.search.reader.Clazz.AttributeInfo;
 import cn.search.Annotation.ClazzConstructor;
 import cn.search.Annotation.ClazzField;
 import cn.search.Annotation.ClazzSelfListField;
-import cn.search.reader.Clazz.Clazz;
 import cn.search.reader.Clazz.CpInfo.ConstantCpInfo;
 import cn.search.reader.Clazz.CpInfo.ConstantUtf8Info;
 import cn.search.reader.Usinged.U1;
 import cn.search.reader.Usinged.U2;
+import cn.search.reader.Utils.CommonUtil;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.DataInputStream;
-import java.util.ArrayList;
-import java.util.List;
 
-import static cn.search.reader.Clazz.Clazz.ACCESS_FLAGS_MAP;
+import static cn.search.reader.Clazz.Clazz.CLAZZ_ACCESS_FLAGS_MAP;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -62,8 +60,7 @@ class Parameters {
         if (nameIndexValue != 0) {
             this.name = (ConstantUtf8Info) constantPool[nameIndexValue - 1];
         }
-        this.accessFlag = Clazz.resolveAccessFlag(this.accessFlags);
-
+        this.accessFlag = CommonUtil.resolveAccessFlag(CLAZZ_ACCESS_FLAGS_MAP, this.accessFlags);
     }
 
 }

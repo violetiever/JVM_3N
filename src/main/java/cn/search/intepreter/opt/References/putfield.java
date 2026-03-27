@@ -6,6 +6,7 @@ import cn.search.reader.Clazz.FieldInfo.FieldInfo;
 import cn.search.reader.Utils.CommonUtil;
 import cn.search.runtime.Frame;
 import cn.search.runtime.Heap;
+import cn.search.runtime.N3Object;
 
 import java.lang.reflect.Field;
 
@@ -18,15 +19,17 @@ public class putfield implements Opcode {
     public void opt(Frame frame) throws NoSuchFieldException, IllegalAccessException {
         int index = CommonUtil.parseIndexByte(frame.getNextCode(), frame.getNextCode());
         Object value = frame.getOperandStack().pop();
-        Object objectRef = frame.getOperandStack().pop();
+        N3Object object = (N3Object) frame.getOperandStack().pop();
         ConstantFieldRefInfo constantFieldRefInfo = (ConstantFieldRefInfo) frame.getRuntimeConstantPool()[index];
         constantFieldRefInfo.resolve();
         FieldInfo fieldInfo = constantFieldRefInfo.getFieldInfo();
+        FieldInfo declaredField = object.getFieldByNameAndDescriptor(fieldInfo.getName().getUtf8Info(), fieldInfo.getDescriptor().getUtf8Info());
+        declaredField.setFieldValue(value);
         // 通过反射获取需要设置值的字段
-        Class object = fieldInfo.getThisClazz().transToClass();
-        Field declaredField = object.getDeclaredField(fieldInfo.getName().getUtf8Info());
-        declaredField.setAccessible(true);
-        declaredField.set(objectRef, value);
+//        Class object = fieldInfo.getThisClazz().transToClass();
+//        Field declaredField = object.getDeclaredField(fieldInfo.getName().getUtf8Info());
+//        declaredField.setAccessible(true);
+//        declaredField.set(objectRef, value);
         frame.getNextCode();
     }
 

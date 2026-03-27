@@ -9,15 +9,32 @@ import cn.search.reader.Clazz.CpInfo.ConstantCpInfo;
 import cn.search.reader.Clazz.CpInfo.ConstantUtf8Info;
 import cn.search.reader.Enum.SpecialClazzType;
 import cn.search.reader.Usinged.U2;
+import cn.search.reader.Utils.CommonUtil;
 import cn.search.reader.Utils.DescriptorUtil;
 import lombok.Data;
 
 import java.io.DataInputStream;
 import java.util.Arrays;
+import java.util.HashMap;
 
 @Data
 @ClazzConstructor
 public class FieldInfo {
+
+    public static HashMap<Integer, String> FIELD_ACCESS_FLAGS_MAP = new HashMap<>();
+
+    static {
+        FIELD_ACCESS_FLAGS_MAP.put(0x0001, "ACC_PUBLIC");
+        FIELD_ACCESS_FLAGS_MAP.put(0x0002, "ACC_PRIVATE");
+        FIELD_ACCESS_FLAGS_MAP.put(0x0004, "ACC_PROTECTED");
+        FIELD_ACCESS_FLAGS_MAP.put(0x0008, "ACC_STATIC");
+        FIELD_ACCESS_FLAGS_MAP.put(0x0010, "ACC_FINAL");
+        FIELD_ACCESS_FLAGS_MAP.put(0x0040, "ACC_VOLATILE");
+        FIELD_ACCESS_FLAGS_MAP.put(0x0080, "ACC_TRANSIENT");
+        FIELD_ACCESS_FLAGS_MAP.put(0x0400, "ACC_ABSTRACT");
+        FIELD_ACCESS_FLAGS_MAP.put(0x1000, "ACC_SYNTHETIC");
+        FIELD_ACCESS_FLAGS_MAP.put(0x4000, "ACC_ENUM");
+    }
 
     // u2
     @ClazzField(order = 0)
@@ -54,7 +71,7 @@ public class FieldInfo {
     }
 
     public FieldInfo(DataInputStream dataInput, ConstantCpInfo[] constantPool, Clazz thisClazz) {
-        this.accessFlag = Clazz.resolveAccessFlag(this.accessFlags);
+        this.accessFlag = CommonUtil.resolveAccessFlag(FIELD_ACCESS_FLAGS_MAP, this.accessFlags);
         this.name = (ConstantUtf8Info) constantPool[this.nameIndex.getValue() - 1];
         this.descriptor = (ConstantUtf8Info) constantPool[this.descriptorIndex.getValue() - 1];
         this.attributes = new AttributeInfo[this.attributesCount.getValue()];
@@ -64,6 +81,10 @@ public class FieldInfo {
         this.thisClazz = thisClazz;
     }
 
+    public boolean isStatic(){
+        return Arrays.asList(this.getAccessFlag()).contains(FIELD_ACCESS_FLAGS_MAP.get(0x0008));
+    }
+
     public void prepare() {
         String descriptor = this.descriptor.getUtf8Info();
         Clazz fieldClazz = DescriptorUtil.getClazzBySingleDescriptor(descriptor, thisClazz.getClazzLoader());
@@ -71,7 +92,7 @@ public class FieldInfo {
         boolean constantValueFlag = false;
         ConstantValueAttribute constantValueAttribute = null;
         for (String access : this.accessFlag)
-            if (access.equals(Clazz.ACCESS_FLAGS_MAP.get(0x0008)))
+            if (access.equals(Clazz.CLAZZ_ACCESS_FLAGS_MAP.get(0x0008)))
                 staticFlag = true;
 
         for (AttributeInfo attribute : this.attributes)

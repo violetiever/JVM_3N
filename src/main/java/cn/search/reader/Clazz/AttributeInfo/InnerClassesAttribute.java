@@ -9,6 +9,7 @@ import cn.search.reader.Clazz.CpInfo.ConstantClassInfo;
 import cn.search.reader.Clazz.CpInfo.ConstantCpInfo;
 import cn.search.reader.Clazz.CpInfo.ConstantUtf8Info;
 import cn.search.reader.Usinged.U2;
+import cn.search.reader.Utils.CommonUtil;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -16,7 +17,7 @@ import java.io.DataInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import static cn.search.reader.Clazz.Clazz.ACCESS_FLAGS_MAP;
+import static cn.search.reader.Clazz.Clazz.CLAZZ_ACCESS_FLAGS_MAP;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -80,7 +81,7 @@ class Classes {
         if (this.innerNameIndex.getValue() != 0)
             this.innerName = (ConstantUtf8Info) constantPool[this.innerNameIndex.getValue() - 1];
 
-        this.innerClassAccess = Clazz.resolveAccessFlag(this.innerClassAccessFlages);
+        this.innerClassAccess = CommonUtil.resolveAccessFlag(CLAZZ_ACCESS_FLAGS_MAP, this.innerClassAccessFlages);
 
     }
 

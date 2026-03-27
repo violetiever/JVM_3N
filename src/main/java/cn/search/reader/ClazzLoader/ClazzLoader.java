@@ -5,6 +5,7 @@ import cn.search.reader.Clazz.CpInfo.ConstantClassInfo;
 import cn.search.reader.Clazz.CpInfo.ConstantUtf8Info;
 import cn.search.reader.Enum.SpecialClazzType;
 import cn.search.reader.Usinged.U2;
+import cn.search.reader.Utils.CommonUtil;
 import cn.search.runtime.Heap;
 import cn.search.runtime.MethodArea;
 import lombok.Data;
@@ -54,7 +55,7 @@ public abstract class ClazzLoader {
 
     private static final ConstantClassInfo objectClazz = new ConstantClassInfo().setName(new ConstantUtf8Info().setUtf8Info("java/lang/Object"));
 
-    private static final String[] arrayAccessFlag = Clazz.resolveAccessFlag(new U2(1041));
+    private static final String[] arrayAccessFlag = CommonUtil.resolveAccessFlag(Clazz.CLAZZ_ACCESS_FLAGS_MAP,new U2(1041));
 
     public ClazzLoader(ClazzLoader parentClazzLoader, String[] clazzPath) {
         this.parentClazzLoader = parentClazzLoader;

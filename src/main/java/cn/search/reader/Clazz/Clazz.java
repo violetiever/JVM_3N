@@ -10,8 +10,10 @@ import cn.search.reader.ClazzLoader.ClazzLoader;
 import cn.search.reader.Enum.SpecialClazzType;
 import cn.search.reader.Usinged.U2;
 import cn.search.reader.Usinged.U4;
+import cn.search.reader.Utils.CommonUtil;
 import cn.search.reader.Utils.DescriptorUtil;
 import cn.search.runtime.Frame;
+import cn.search.runtime.N3Object;
 import lombok.AllArgsConstructor;
 
 import java.io.DataInputStream;
@@ -23,17 +25,17 @@ import static cn.search.reader.Enum.SpecialClazzType.CLASS_TYPE_MAP;
 @AllArgsConstructor
 public class Clazz {
 
-    public static HashMap<Integer, String> ACCESS_FLAGS_MAP = new HashMap<>();
+    public static HashMap<Integer, String> CLAZZ_ACCESS_FLAGS_MAP = new HashMap<>();
 
     static {
-        ACCESS_FLAGS_MAP.put(0x0001, "ACC_PUBLIC");
-        ACCESS_FLAGS_MAP.put(0x0010, "ACC_FINAL");
-        ACCESS_FLAGS_MAP.put(0x0020, "ACC_SUPER");
-        ACCESS_FLAGS_MAP.put(0x0200, "ACC_INTERFACE");
-        ACCESS_FLAGS_MAP.put(0x0400, "ACC_ABSTRACT");
-        ACCESS_FLAGS_MAP.put(0x1000, "ACC_SYNTHETIC");
-        ACCESS_FLAGS_MAP.put(0x2000, "ACC_ANNOTATION");
-        ACCESS_FLAGS_MAP.put(0x4000, "ACC_ENUM");
+        CLAZZ_ACCESS_FLAGS_MAP.put(0x0001, "ACC_PUBLIC");
+        CLAZZ_ACCESS_FLAGS_MAP.put(0x0010, "ACC_FINAL");
+        CLAZZ_ACCESS_FLAGS_MAP.put(0x0020, "ACC_SUPER");
+        CLAZZ_ACCESS_FLAGS_MAP.put(0x0200, "ACC_INTERFACE");
+        CLAZZ_ACCESS_FLAGS_MAP.put(0x0400, "ACC_ABSTRACT");
+        CLAZZ_ACCESS_FLAGS_MAP.put(0x1000, "ACC_SYNTHETIC");
+        CLAZZ_ACCESS_FLAGS_MAP.put(0x2000, "ACC_ANNOTATION");
+        CLAZZ_ACCESS_FLAGS_MAP.put(0x4000, "ACC_ENUM");
     }
 
 
@@ -43,23 +45,6 @@ public class Clazz {
         ConstantUtf8Info utf8Name = new ConstantUtf8Info();
         utf8Name.setUtf8Info(name);
         this.thisClassInfo.setName(utf8Name);
-    }
-
-    public static String[] resolveAccessFlag(U2 accessFlags) {
-
-        List<String> accessFlagsTemp = new ArrayList<>();
-
-        ACCESS_FLAGS_MAP.keySet().forEach(k -> {
-            if ((accessFlags.getValue() & k) == k) {
-                accessFlagsTemp.add(ACCESS_FLAGS_MAP.get(k));
-            }
-        });
-
-        String[] result = new String[accessFlagsTemp.size()];
-        for (int i = 0; i < accessFlagsTemp.size(); i++) {
-            result[i] = accessFlagsTemp.get(i);
-        }
-        return result;
     }
 
     //protected byte Header[] = {202,254,186,190};
@@ -151,7 +136,7 @@ public class Clazz {
         }
 
         this.accessFlags = new U2(dataInput);
-        this.accessFlagsName = Clazz.resolveAccessFlag(this.accessFlags);
+        this.accessFlagsName = CommonUtil.resolveAccessFlag(CLAZZ_ACCESS_FLAGS_MAP,this.accessFlags);
 
         this.thisClass = new U2(dataInput);
         this.thisClassInfo = (ConstantClassInfo) this.constantPool[this.thisClass.getValue() - 1];
@@ -211,7 +196,7 @@ public class Clazz {
     }
 
     public boolean isInterface() {
-        return Arrays.asList(this.getAccessFlagsName()).contains(ACCESS_FLAGS_MAP.get(0x0200));
+        return Arrays.asList(this.getAccessFlagsName()).contains(CLAZZ_ACCESS_FLAGS_MAP.get(0x0200));
     }
 
     public boolean inInstanceOf(Clazz clazzInfo) {
@@ -221,6 +206,40 @@ public class Clazz {
             return this.isSonArrayOf(clazzInfo);
         else
             return this.isSonClazzOf(clazzInfo);
+    }
+
+    public N3Object getNewInstance(){
+        this.resolve();
+        this.prepare();
+        N3Object newObject = new N3Object();
+        // 设置字段
+        if(Objects.nonNull(this.getFields())){
+            FieldInfo[] newFieldInfos = new FieldInfo[this.getFields().length];
+            for (int i = 0; i < this.getFields().length; i++) {
+                FieldInfo oriField = this.getFields()[i];
+                if(oriField.isStatic())
+                    newFieldInfos[i]=oriField;
+                else {
+                    FieldInfo newFieldInfo = new FieldInfo();
+                    newFieldInfo.setAccessFlag(oriField.getAccessFlag());
+                    newFieldInfo.setName(oriField.getName());
+                    newFieldInfo.setDescriptor(oriField.getDescriptor());
+                    newFieldInfos[i] = newFieldInfo;
+                }
+            }
+            newObject.setFieldInfos(newFieldInfos);
+        }
+        // 设置当前类
+        newObject.setThisClazz(this);
+        // 设置父类
+        if(Objects.nonNull(this.getSuperClassInfo())) {
+            newObject.setSuperClazz(this.getSuperClassInfo().getClazzInfo());
+            this.getSuperClassInfo().getClazzInfo().resolve();
+            this.getSuperClassInfo().getClazzInfo().prepare();
+            newObject.setSuperObject(this.getSuperClassInfo().getClazzInfo().getNewInstance());
+        }
+        return newObject;
+
     }
 
     // 是clazz的子类
