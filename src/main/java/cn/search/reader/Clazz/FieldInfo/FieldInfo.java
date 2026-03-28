@@ -16,6 +16,7 @@ import lombok.Data;
 import java.io.DataInputStream;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Objects;
 
 @Data
 @ClazzConstructor
@@ -81,7 +82,7 @@ public class FieldInfo {
         this.thisClazz = thisClazz;
     }
 
-    public boolean isStatic(){
+    public boolean isStatic() {
         return Arrays.asList(this.getAccessFlag()).contains(FIELD_ACCESS_FLAGS_MAP.get(0x0008));
     }
 
@@ -94,12 +95,12 @@ public class FieldInfo {
         for (String access : this.accessFlag)
             if (access.equals(Clazz.CLAZZ_ACCESS_FLAGS_MAP.get(0x0008)))
                 staticFlag = true;
-
-        for (AttributeInfo attribute : this.attributes)
-            if (attribute instanceof ConstantValueAttribute) {
-                constantValueAttribute = (ConstantValueAttribute) attribute;
-                constantValueFlag = true;
-            }
+        if (Objects.nonNull(this.attributes))
+            for (AttributeInfo attribute : this.attributes)
+                if (attribute instanceof ConstantValueAttribute) {
+                    constantValueAttribute = (ConstantValueAttribute) attribute;
+                    constantValueFlag = true;
+                }
 
         // 是原始类型的话获取默认值
         if (fieldClazz.isPrimitive())

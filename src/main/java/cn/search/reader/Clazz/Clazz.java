@@ -224,6 +224,9 @@ public class Clazz {
                     newFieldInfo.setAccessFlag(oriField.getAccessFlag());
                     newFieldInfo.setName(oriField.getName());
                     newFieldInfo.setDescriptor(oriField.getDescriptor());
+                    newFieldInfo.setThisClazz(oriField.getThisClazz());
+                    newFieldInfo.setAttributes(oriField.getAttributes());
+                    newFieldInfo.prepare();
                     newFieldInfos[i] = newFieldInfo;
                 }
             }

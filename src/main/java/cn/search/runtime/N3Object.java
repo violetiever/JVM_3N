@@ -17,6 +17,8 @@ public class N3Object {
 
     private FieldInfo[] fieldInfos;
 
+    private Integer heapIndex;
+
 
     public FieldInfo getFieldByNameAndDescriptor(String fieldName, String descriptor) {
         FieldInfo fieldInfo = null;
@@ -36,7 +38,7 @@ public class N3Object {
 
     @Override
     public String toString() {
-        return "N3Object(" + thisClazz.getName() + ')';
+        return this.getHeapIndex() + "N3Object(" + thisClazz.getName() + ')';
     }
 
 }

@@ -3,13 +3,11 @@ package cn.search.intepreter.opt.References;
 import cn.search.intepreter.opt.Opcode;
 import cn.search.reader.Clazz.Clazz;
 import cn.search.reader.Clazz.CpInfo.ConstantClassInfo;
-import cn.search.reader.Clazz.FieldInfo.FieldInfo;
 import cn.search.reader.ClazzLoader.ClazzLoader;
 import cn.search.reader.Utils.CommonUtil;
 import cn.search.runtime.Frame;
+import cn.search.runtime.Heap;
 import cn.search.runtime.N3Object;
-
-import java.util.Objects;
 
 /**
  * Java虚拟机规范.Java SE 8版 310页
@@ -24,6 +22,7 @@ public class _new implements Opcode {
         clazz.prepare();
         clazz.resolve();
         N3Object newInstance = clazz.getNewInstance();
+        newInstance.setHeapIndex(Heap.putIntoObjectPool(newInstance));
         frame.getOperandStack().push(newInstance);
         // clazz.initialize(frame);
 //        try {
